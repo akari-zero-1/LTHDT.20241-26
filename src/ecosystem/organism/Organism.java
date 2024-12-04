@@ -1,9 +1,9 @@
 package src.ecosystem.organism;
 
-public class Organism {
-    private int energy;
-    private int xPos;
-    private int yPos;
+public abstract class Organism {
+    public int energy;
+    public int xPos;
+    public int yPos;
 
     public Organism(int energy, int xPos, int yPos) {
         this.energy = energy;
