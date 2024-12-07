@@ -141,4 +141,24 @@ public class Environment {
         }
         return carnivores;
     }
+
+    public void countOrganisms() {
+        int plantCount = 0;
+        int herbivoreCount = 0;
+        int carnivoreCount = 0;
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (grid[j][i] instanceof Plant) {
+                    plantCount++;
+                } else if (grid[j][i] instanceof Herbivore) {
+                    herbivoreCount++;
+                } else if (grid[j][i] instanceof Carnivore) {
+                    carnivoreCount++;
+                }
+            }
+        }
+
+        System.out.printf("🔍 Số lượng hiện tại — Plants: %d, Herbivores: %d, Carnivores: %d%n", plantCount, herbivoreCount, carnivoreCount);
+    }
 }
