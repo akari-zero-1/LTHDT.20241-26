@@ -77,8 +77,12 @@ public class Environment {
                     System.out.print(". ");
                 } else if (grid[j][i] instanceof Plant) {
                     System.out.print("P ");
-                } else if (grid[j][i] instanceof Animal) {
-                    System.out.print("A ");
+                } else if (grid[j][i] instanceof Herbivore) {
+                    System.out.print("H "); // Hiển thị Herbivore là "H"
+                } else if (grid[j][i] instanceof Carnivore) {
+                    System.out.print("C "); // Hiển thị Carnivore là "C"
+                } else {
+                    System.out.print("? "); // Dự phòng nếu có lớp mới không được xác định
                 }
             }
             System.out.println();

@@ -1,12 +1,13 @@
 package src.ecosystem.organism;
 
-import java.util.ArrayList;
+import src.ecosystem.environment.Environment;
 import java.util.List;
-import java.util.Random;
 
 public class Carnivore extends Animal {
-    private static final int MOVE_SPEED = 2; // Speed of movement for Carnivore
-    private static final int ENERGY_GAIN_FROM_PREY = 50; // Energy gained by consuming prey
+    private static final int VISION_RANGE = 4; // Phạm vi tầm nhìn của động vật ăn thịt
+    private static final double ENERGY_GAIN_PERCENTAGE = 0.1; // Phần trăm năng lượng thu được khi ăn động vật ăn cỏ
+    private static final int ENERGY_THRESHOLD_FOR_REPRODUCTION = 150; // Ngưỡng năng lượng để sinh sản
+    private static final int ENERGY_DECAY = 3; // Năng lượng mất đi nếu không tìm thấy con mồi
 
     public Carnivore(int energy, int xPos, int yPos) {
         super(energy, xPos, yPos);
@@ -14,61 +15,97 @@ public class Carnivore extends Animal {
 
     @Override
     public int getMoveSpeed() {
-        return MOVE_SPEED;
+        return 3; // Tốc độ di chuyển của Carnivore
     }
 
     @Override
     public void move(Organism[][] map) {
-        int gridWidth = map.length;
-        int gridHeight = map[0].length;
+        Environment env = new Environment(map.length, map[0].length);
+        List<Herbivore> herbivores = env.getAllHerbivores();
 
-        List<int[]> preyPositions = new ArrayList<>();
-        List<int[]> emptyPositions = new ArrayList<>();
+        if (herbivores.isEmpty()) {
+            loseEnergy();
+            super.move(map); // Di chuyển ngẫu nhiên nếu không tìm thấy Herbivore
+            return;
+        }
 
-        // Scan for prey and valid empty positions within move range
-        for (int dx = -MOVE_SPEED; dx <= MOVE_SPEED; dx++) {
-            for (int dy = -MOVE_SPEED; dy <= MOVE_SPEED; dy++) {
-                int newX = this.xPos + dx;
-                int newY = this.yPos + dy;
+        Herbivore nearestHerbivore = null;
+        double minDistance = Double.MAX_VALUE;
 
-                if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight) {
-                    if (map[newX][newY] instanceof Herbivore) {
-                        preyPositions.add(new int[]{newX, newY}); // Add herbivore position
-                    } else if (map[newX][newY] == null) {
-                        emptyPositions.add(new int[]{newX, newY}); // Add empty cell
-                    }
-                }
+        // Tìm Herbivore gần nhất trong phạm vi VISION_RANGE
+        for (Herbivore herbivore : herbivores) {
+            double distance = calculateDistance(this.xPos, this.yPos, herbivore.getxPos(), herbivore.getyPos());
+            if (distance < minDistance && distance <= VISION_RANGE) {
+                nearestHerbivore = herbivore;
+                minDistance = distance;
             }
         }
 
-        Random random = new Random();
+        if (nearestHerbivore != null) {
+            int dx = Integer.compare(nearestHerbivore.getxPos(), this.xPos);
+            int dy = Integer.compare(nearestHerbivore.getyPos(), this.yPos);
+            int newX = this.xPos + dx;
+            int newY = this.yPos + dy;
 
-        // Prioritize hunting prey
-        if (!preyPositions.isEmpty()) {
-            int[] target = preyPositions.get(random.nextInt(preyPositions.size()));
+            if (isValidMove(newX, newY, map)) {
+                map[this.xPos][this.yPos] = null; // Giải phóng ô cũ
+                this.xPos = newX;
+                this.yPos = newY;
+                map[this.xPos][this.yPos] = this; // Di chuyển đến ô mới
+                this.energy -= ENERGY_DECAY; // Giảm năng lượng vì đã di chuyển
+            }
 
-            // Move to prey's position and consume
-            map[this.xPos][this.yPos] = null;
-            this.xPos = target[0];
-            this.yPos = target[1];
-            this.energy += ENERGY_GAIN_FROM_PREY;
-            map[this.xPos][this.yPos] = this;
-        } else if (!emptyPositions.isEmpty()) {
-            // Move to a random empty position if no prey is available
-            int[] target = emptyPositions.get(random.nextInt(emptyPositions.size()));
-
-            map[this.xPos][this.yPos] = null;
-            this.xPos = target[0];
-            this.yPos = target[1];
-            map[this.xPos][this.yPos] = this;
+            // Nếu Carnivore di chuyển đến vị trí của Herbivore, nó sẽ tiêu thụ Herbivore
+            if (this.xPos == nearestHerbivore.getxPos() && this.yPos == nearestHerbivore.getyPos()) {
+                consumeHerbivore(nearestHerbivore);
+                map[this.xPos][this.yPos] = this; // Carnivore thay thế vị trí của Herbivore
+            }
+        } else {
+            loseEnergy();
+            super.move(map); // Di chuyển ngẫu nhiên nếu không tìm thấy Herbivore
         }
 
-        // Energy decay after action
-        this.energy -= energyDecay;
-
-        // Check for death (handled by environment clean-up)
-        if (this.energy <= 0) {
-            map[this.xPos][this.yPos] = null;
+        if (this.energy > ENERGY_THRESHOLD_FOR_REPRODUCTION) {
+            reproduce(map);
         }
+    }
+
+    private void consumeHerbivore(Herbivore herbivore) {
+        int gainedEnergy = (int) (herbivore.getEnergy() * ENERGY_GAIN_PERCENTAGE);
+        this.energy += gainedEnergy; // Tăng năng lượng của Carnivore
+        herbivore.setEnergy(0); // Xoá năng lượng của Herbivore (để loại bỏ nó)
+    }
+
+    private void loseEnergy() {
+        this.energy -= ENERGY_DECAY; // Mất năng lượng nếu không tìm thấy thức ăn
+    }
+
+    private void reproduce(Organism[][] map) {
+        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+
+        for (int[] direction : directions) {
+            int newX = this.xPos + direction[0];
+            int newY = this.yPos + direction[1];
+
+            if (isValidMove(newX, newY, map)) {
+                Carnivore offspring = new Carnivore(70, newX, newY); // Con non có 70 năng lượng
+                map[newX][newY] = offspring;
+                this.energy -= 70; // Giảm năng lượng của Carnivore để sinh sản
+                break; // Sinh sản xong thì dừng lại
+            }
+        }
+    }
+
+    private double calculateDistance(int x1, int y1, int x2, int y2) {
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+    }
+
+    private boolean isValidMove(int x, int y, Organism[][] map) {
+        return x >= 0 && x < map.length && y >= 0 && y < map[0].length && map[x][y] == null;
+    }
+
+    @Override
+    public String toString() {
+        return "Carnivore [energy=" + energy + ", xPos=" + xPos + ", yPos=" + yPos + "]";
     }
 }
