@@ -1,14 +1,12 @@
 package src.ecosystem.environment;
-import src.ecosystem.organism.Animal;
-import src.ecosystem.organism.Organism;
-import src.ecosystem.organism.Plant;
+import src.ecosystem.organism.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Environment {
-    private int width; // Chiều rộng lưới
+    private int width; // Chiều rộng lướia
     private int height; // Chiều cao lưới
     private Organism[][] grid; // Lưới chứa sinh vật
     private List<Organism> organisms; // Danh sách tất cả sinh vật
@@ -109,5 +107,34 @@ public class Environment {
                 y = random.nextInt(height);
             } while (grid[x][y] != null);
         }
+    }
+    public List<Plant> getAllProducers() {
+        List<Plant> producers = new ArrayList<>();
+        for (Organism organism : organisms) {
+            if (organism instanceof Plant) {
+                producers.add((Plant) organism);
+            }
+        }
+        return producers;
+    }
+
+    public List<Herbivore> getAllHerbivores() {
+        List<Herbivore> herbivores = new ArrayList<>();
+        for (Organism organism : organisms) {
+            if (organism instanceof Herbivore) {
+                herbivores.add((Herbivore) organism);
+            }
+        }
+        return herbivores;
+    }
+
+    public List<Carnivore> getAllCarnivores() {
+        List<Carnivore> carnivores = new ArrayList<>();
+        for (Organism organism : organisms) {
+            if (organism instanceof Carnivore) {
+                carnivores.add((Carnivore) organism);
+            }
+        }
+        return carnivores;
     }
 }
