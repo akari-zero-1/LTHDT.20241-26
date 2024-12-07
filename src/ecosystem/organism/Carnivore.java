@@ -1,4 +1,3 @@
-
 package src.ecosystem.organism;
     import src.ecosystem.environment.Environment;
     import java.util.ArrayList;
@@ -120,20 +119,40 @@ private void moveRandomly(Organism[][] map, int targetX, int targetY) {
 
     } 
 }
-public void reproduce (Organism organism,int energy_max, Environment environment){
-    if (this.energy > energy_max) {
-        this.energy = this.energy/2;
-
-
-        //???????????
-        Herbivore offspring = new Herbivore(this.energy / 2, this.xPos, this.yPos);
-        environment.addOrganism(offspring, this.xPos, this.yPos);
-
-    }
-
-
-}
+public void reproduce(Organism[][] map, int maxEnergy, Environment environment) {
     
+    if (this.energy > maxEnergy) {
+        int gridWidth = map.length;
+        int gridHeight = map[0].length;
+
+        List<int[]> emptyPositions = new ArrayList<>();
+
+        
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (dx == 0 && dy == 0) continue; 
+
+                int newX = this.xPos + dx;
+                int newY = this.yPos + dy;
+
+                if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight && map[newX][newY] == null) {
+                    emptyPositions.add(new int[] { newX, newY });
+                }
+            }
+        }
+
+        
+        if (!emptyPositions.isEmpty()) {
+            Random rand = new Random();
+            int[] chosenPosition = emptyPositions.get(rand.nextInt(emptyPositions.size()));
+            this.energy /= 2;
+            Herbivore offspring = new Herbivore(this.energy, chosenPosition[0], chosenPosition[1]);          
+            environment.addOrganism(offspring, chosenPosition[0], chosenPosition[1]);
+
+        }
+    }
+}
+ 
 
 
 
