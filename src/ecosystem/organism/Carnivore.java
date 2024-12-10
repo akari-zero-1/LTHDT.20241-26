@@ -3,12 +3,24 @@ package src.ecosystem.organism;
 
 import java.util.*;
 
-public class Carnivore extends Organism {
+public class Carnivore extends Animal {
+    private static final int VISION_RANGE = 4;
     private static final int ENERGY_THRESHOLD_FOR_REPRODUCTION = 100; // Ngưỡng năng lượng để sinh sản
     private static final int ENERGY_LOSS_PER_TURN = 2; // Năng lượng mất mỗi lần hành động
 
     public Carnivore(int xPos, int yPos, int energy) {
         super(xPos, yPos, energy);
+    }
+
+    @Override
+    public int getMoveSpeed() {
+        return 3; // Tốc độ di chuyển của Carnivore
+    }
+
+
+    @Override
+    public int getVisionRange() {
+        return VISION_RANGE;
     }
 
     // Hành động của Carnivore theo thứ tự ưu tiên
@@ -48,7 +60,7 @@ public class Carnivore extends Organism {
     }
 
     // Phát hiện các Herbivore và ô trống xung quanh
-    private Map<String, List<int[]>> detect(Organism[][] map) {
+    public Map<String, List<int[]>> detect(Organism[][] map) {
         Map<String, List<int[]>> detectionResults = new HashMap<>();
         detectionResults.put("DetectedHerbivores", new ArrayList<>());
         detectionResults.put("ValidMoves", new ArrayList<>());
@@ -72,13 +84,27 @@ public class Carnivore extends Organism {
         return detectionResults;
     }
 
-    // Sinh sản Carnivore mới nếu năng lượng đủ
-    private void reproduce(Organism[][] map) {
-        List<int[]> validMoves = detect(map).get("ValidMoves");
-        if (!validMoves.isEmpty()) {
-            int[] pos = validMoves.get(0); // Chọn vị trí trống đầu tiên
-            map[pos[0]][pos[1]] = new Carnivore(pos[0], pos[1], this.energy / 2); // Chia sẻ năng lượng
-            this.energy /= 2; // Giảm năng lượng sau khi sinh sản
+    @Override
+    public void reproduce(Organism[][] map) {
+        if (this.getEnergy() >= ENERGY_THRESHOLD_FOR_REPRODUCTION) {
+            int gridWidth = map.length;
+            int gridHeight = map[0].length;
+
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (dx == 0 && dy == 0)
+                        continue;
+                    int newX = this.xPos + dx;
+                    int newY = this.yPos + dy;
+                    if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight && map[newX][newY] == null) {
+                        int energy_new = this.energy / 2;
+                        Herbivore offspring = new Herbivore(energy_new, newX, newY);
+                        map[newX][newY]=offspring;
+                        this.energy = this.energy - energy_new;// nang luong cua me giam di 1 nua
+                        break;
+                    }
+                }
+            }
         }
     }
 
