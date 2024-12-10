@@ -40,4 +40,7 @@ public class Plant extends Organism {
     private void grow() {
         setEnergy(getEnergy() + 1);
     }
+
+    public void reproduce(Organism[][] grid) {
+    }
 }
