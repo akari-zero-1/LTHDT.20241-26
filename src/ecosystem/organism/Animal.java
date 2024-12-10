@@ -72,4 +72,6 @@ public abstract class Animal extends Organism {
         return result;
     }
 
+    public void act(Organism[][] grid) {
+    }
 }
