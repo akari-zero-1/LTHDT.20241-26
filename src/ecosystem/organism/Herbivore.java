@@ -1,12 +1,9 @@
 package src.ecosystem.organism;
-
-
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+//import java.util.Random;
 
 public class Herbivore extends Animal {
-
     // Các thông số của Herbivore
     private static int moveSpeed = 2;
     private static int visionRange = 4;
@@ -16,43 +13,37 @@ public class Herbivore extends Animal {
     public Herbivore(int energy, int xPos, int yPos) {
         super(energy, xPos, yPos);
     }
-
     @Override
     public int getMoveSpeed() {
         return moveSpeed;
     }
-
     @Override
     public int getVisionRange() {
         return visionRange;
     }
-
     @Override
-    public void reproduce(Organism[][] map) {
-        if (this.getEnergy() >= energyThresholdForReproduction) {
-             int gridWidth = map.length;
-             int gridHeight = map[0].length;
-              
-              for (int dx = -1; dx <= 1; dx++) {
-                for (int dy = -1; dy <= 1; dy++) {
-                    if (dx == 0 && dy == 0)
-                        continue;
-
-                    int newX = this.xPos + dx;
-                    int newY = this.yPos + dy;
-
-                    if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight && map[newX][newY] == null) {
-                        int energy_new = this.energy / 2;
-                        Herbivore offspring = new Herbivore(energy_new, newX, newY);
-                        map[newX][newY]=offspring;
-                        this.energy = this.energy - energy_new;// nang luong cua me giam di 1 nua
-                        break;
+        public void reproduce(Organism[][] map) {
+            if (this.getEnergy() >= energyThresholdForReproduction) {
+                 int gridWidth = map.length;
+                 int gridHeight = map[0].length;
+                  
+                  for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if (dx == 0 && dy == 0)
+                            continue;
+                        int newX = this.xPos + dx;
+                        int newY = this.yPos + dy;
+                        if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight && map[newX][newY] == null) {
+                            int energy_new = this.energy / 2;
+                            Herbivore offspring = new Herbivore(energy_new, newX, newY);
+                            map[newX][newY]=offspring;
+                            this.energy = this.energy - energy_new;// nang luong cua me giam di 1 nua
+                            break;
+                        }
                     }
                 }
             }
         }
-    }
-
     public void eat_Plant(Organism[][] map, int plantX, int plantY) {
         Plant plant = (Plant) map[plantX][plantY];
         int energy_current =this.getEnergy() + (int) (plant.getEnergy() * 0.1);
@@ -63,117 +54,108 @@ public class Herbivore extends Animal {
         this.setyPos(plantY);
         map[plantX][plantY] = this;
 
-    }
-
-   
+    } 
     public void act(Organism[][] map) {
         int ateFood =0;
-        
         Map<String, List<int[]>> detected = detect(map);
-
-        // Kiểm tra nếu có động vật ăn thịt gần
         List<int[]> detectedCarnivores = detected.get("DetectedCarnivores");
+        List<int[]> validMoves = detected.get("ValidMoves");
+        List<int[]> detectedPlants = detected.get("DetectedPlants");
         if (!detectedCarnivores.isEmpty()) {
-            int[] escapePosition = findEscapePosition(detectedCarnivores, map);
+            int[] escapePosition = findEscapePosition(detectedCarnivores, validMoves);
             if (escapePosition != null) {
-                moveToPosition(escapePosition[0], escapePosition[1], map);
+                moveToPosition(escapePosition[0], escapePosition[1], map,validMoves);
                 return;  
             }
         }
-
-        // Kiểm tra nếu năng lượng đủ để sinh sản
+    
+        // sinh san neu du dieu kien
         if (this.getEnergy() >= energyThresholdForReproduction) {
             reproduce(map);
             return;  
         }
-
-        // Kiểm tra nếu có cây gần để ăn
-        List<int[]> detectedPlants = detected.get("DetectedPlants");
-        if (!detectedPlants.isEmpty()) {
-            int[] plantPosition = detectedPlants.get(0);  
-            eat_Plant(map, plantPosition[0], plantPosition[1]);
-            ateFood =1;
-            return;  
+        
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int neighborX = this.getxPos() + dx;
+                int neighborY = this.getyPos() + dy;
+                if (neighborX >= 0 && neighborX < map.length && neighborY >= 0 && neighborY < map[0].length && map[neighborX][neighborY] instanceof Plant) {
+                    eat_Plant(map, neighborX, neighborY);
+                    ateFood = 1;
+                    return; 
+                }
+            }
         }
-
-       
         if (!detectedPlants.isEmpty()) {
-            int[] plantPosition = detectedPlants.get(0);
-            moveToPosition(plantPosition[0], plantPosition[1], map);
+            int[] plantPosition = detectedPlants.get(0); 
+            moveToPosition(plantPosition[0], plantPosition[1], map,validMoves);
             return; 
         }
-
-        moveRandomly(map);
-        // nếu không ăn thì bị giảm năng lượng
+        moveRandomly(map,validMoves);
         if (ateFood ==0) {
             this.setEnergy(this.energy -energyDecay);  
         }
     }
 
     // Tìm vị trí để chạy trốn khỏi động vật ăn thịt
-    private int[] findEscapePosition(List<int[]> detectedCarnivores, Organism[][] map) {
+    private int[] findEscapePosition(List<int[]> detectedCarnivores, List<int[]> validMoves) {
         int closestDistance = Integer.MAX_VALUE;
         int[] escapePosition = null;
         for (int[] carnivorePos : detectedCarnivores) {
-            int distance = calculateDistance(carnivorePos[0], carnivorePos[1]);
+            for(int[] Move : validMoves){
+                int distance = (int) Math.sqrt(Math.pow(Move[0] -carnivorePos[0], 2) + Math.pow(Move[1] -carnivorePos[1], 2));
             if (distance < closestDistance) {
                 closestDistance = distance;
-                escapePosition = findFartherPosition(map, carnivorePos[0], carnivorePos[1]);
+                escapePosition = findFartherPosition(validMoves, carnivorePos[0], carnivorePos[1]);
             }
+        }
         }
         return escapePosition;
     }
-
-    // Tính khoảng cách 
-    private int calculateDistance(int targetX, int targetY) {
-        return (int) Math.sqrt(Math.pow(this.getxPos() - targetX, 2) + Math.pow(this.getyPos() - targetY, 2));
-    }
-
     // chạy trốn
-    private int[] findFartherPosition(Organism[][] map, int targetX, int targetY) {
-        int gridWidth = map.length;
-        int gridHeight = map[0].length;
+    private int[] findFartherPosition(List<int[]> validMoves, int targetX, int targetY) {
         int[] bestPosition = null;
         int maxDistance = -1;
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                int newX = this.getxPos() + dx;
-                int newY = this.getyPos() + dy;
-                if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight && map[newX][newY] == null) {
-                    int distance = calculateDistance(targetX, targetY);
-                    if (distance > maxDistance) {
-                        maxDistance = distance;
-                        bestPosition = new int[] { newX, newY };
-                    }
-                }
+        for (int[] move : validMoves) {
+            int newX = move[0];
+            int newY = move[1];
+            int distance = (int) Math.sqrt(Math.pow(newX - targetX, 2) + Math.pow(newY - targetY, 2));
+            if (distance > maxDistance) {
+                maxDistance = distance;
+                bestPosition = new int[] { newX, newY };
             }
         }
         return bestPosition;
     }
 
-
-    private void moveToPosition(int targetX, int targetY, Organism[][] map) {
-        map[this.getxPos()][this.getyPos()] = null; 
-        this.setxPos(targetX);
-        this.setyPos(targetY);
-        map[targetX][targetY] = this;  
+    private void moveToPosition(int targetX, int targetY,Organism[][] map , List<int[]> validMoves) {
+        int isValidMove = 0;
+        for(int[] pos : validMoves){
+            if (pos[0]==targetX&& pos[1]==targetY) {
+                isValidMove =1;
+                break;
+            }
+        }
+            if (isValidMove ==1) {
+            map[this.getxPos()][this.getyPos()] = null; 
+            this.setxPos(targetX);
+            this.setyPos(targetY);
+            map[targetX][targetY] = this;  
+                
+}
     }
 
     // Di chuyển ngẫu nhiên nếu không có hành động ưu tiên nào
-    private void moveRandomly(Organism[][] map) {
-        Random rand = new Random();
-        int newX = rand.nextInt(map.length);
-        int newY = rand.nextInt(map[0].length);
-        while (map[newX][newY] != null) {
-            newX = rand.nextInt(map.length);
-            newY = rand.nextInt(map[0].length);
+    private void moveRandomly(Organism[][] map, List<int[]> validMoves) {
+        if (validMoves.isEmpty()) {
+            return; 
         }
-        moveToPosition(newX, newY, map);
+        for (int[] move : validMoves) {
+            moveToPosition(move[0], move[1],map,validMoves);
+            break; 
+        }
     }
-
-  
-  
-
+    
     // Getter và Setter cho các thuộc tính của Herbivore
     public int getEnergy() {
         return super.getEnergy();
