@@ -12,13 +12,11 @@ public class EcosystemGUI extends JPanel {
 
     // Hình ảnh đại diện
     private Image grassImage, emptyImage, sheepImage, wolfImage;
-
     public EcosystemGUI(Environment environment) {
         this.environment = environment;
         loadImages(); // Tải hình ảnh từ thư mục resources
         setPreferredSize(new Dimension(environment.getWidth() * CELL_SIZE, environment.getHeight() * CELL_SIZE));
     }
-
     private void loadImages() {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         grassImage = toolkit.getImage("resources/grass.png");
@@ -32,12 +30,10 @@ public class EcosystemGUI extends JPanel {
         super.paintComponent(g);
         drawGrid(g); // Vẽ hệ sinh thái
     }
-
-    private void drawGrid(Graphics g) {
+  private void drawGrid(Graphics g) {
         for (int x = 0; x < environment.getWidth(); x++) {
             for (int y = 0; y < environment.getHeight(); y++) {
                 Organism organism = environment.getOrganismAt(x, y);
-
                 // Xác định hình ảnh cần vẽ
                 if (organism == null) {
                     g.drawImage(emptyImage, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE, this);
