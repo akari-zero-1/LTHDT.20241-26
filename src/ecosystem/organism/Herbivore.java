@@ -56,11 +56,12 @@ public class Herbivore extends Animal {
 
     } 
     public void act(Organism[][] map) {
-        int ateFood =0;
+       
         Map<String, List<int[]>> detected = detect(map);
         List<int[]> detectedCarnivores = detected.get("DetectedCarnivores");
         List<int[]> validMoves = detected.get("ValidMoves");
         List<int[]> detectedPlants = detected.get("DetectedPlants");
+
         if (!detectedCarnivores.isEmpty()) {
             int[] escapePosition = findEscapePosition(detectedCarnivores, validMoves);
             if (escapePosition != null) {
@@ -68,20 +69,18 @@ public class Herbivore extends Animal {
                 return;  
             }
         }
-    
         // sinh san neu du dieu kien
         if (this.getEnergy() >= energyThresholdForReproduction) {
             reproduce(map);
             return;  
-        }
-        
+        }  
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 int neighborX = this.getxPos() + dx;
                 int neighborY = this.getyPos() + dy;
                 if (neighborX >= 0 && neighborX < map.length && neighborY >= 0 && neighborY < map[0].length && map[neighborX][neighborY] instanceof Plant) {
                     eat_Plant(map, neighborX, neighborY);
-                    ateFood = 1;
+                  
                     return; 
                 }
             }
@@ -92,9 +91,8 @@ public class Herbivore extends Animal {
             return; 
         }
         moveRandomly(map,validMoves);
-        if (ateFood ==0) {
-            this.setEnergy(this.energy -energyDecay);  
-        }
+        lose_energy(map);
+      
     }
 
     // Tìm vị trí để chạy trốn khỏi động vật ăn thịt
@@ -144,7 +142,6 @@ public class Herbivore extends Animal {
                 
 }
     }
-
     // Di chuyển ngẫu nhiên nếu không có hành động ưu tiên nào
     private void moveRandomly(Organism[][] map, List<int[]> validMoves) {
         if (validMoves.isEmpty()) {
@@ -153,6 +150,12 @@ public class Herbivore extends Animal {
         for (int[] move : validMoves) {
             moveToPosition(move[0], move[1],map,validMoves);
             break; 
+        }
+    }
+    private void lose_energy(Organism[][] map){
+        this.energy = -energyDecay;
+        if (this.energy<=0) {
+            map[this.getxPos()][this.getyPos()] = null; 
         }
     }
     
