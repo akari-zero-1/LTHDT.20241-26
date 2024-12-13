@@ -4,10 +4,53 @@ import src.ecosystem.environment.Environment;
 import java.util.List;
 
 public class Carnivore extends Animal {
-    private static final int VISION_RANGE = 4; // Phạm vi tầm nhìn của động vật ăn thịt
-    private static final double ENERGY_GAIN_PERCENTAGE = 0.1; // Phần trăm năng lượng thu được khi ăn động vật ăn cỏ
-    private static final int ENERGY_THRESHOLD_FOR_REPRODUCTION = 150; // Ngưỡng năng lượng để sinh sản
-    private static final int ENERGY_DECAY = 3; // Năng lượng mất đi nếu không tìm thấy con mồi
+    public static int moveSpeed = 2;
+    public static int maxEnergy = 100;
+    public static int visionRange = 4; // Phạm vi tầm nhìn của động vật ăn thịt
+    public static double energyGainPercentage  = 0.1; // Phần trăm năng lượng thu được khi ăn động vật ăn cỏ
+    public static int energyThresholdForReproduction  = 150; // Ngưỡng năng lượng để sinh sản
+    public static int energyDecay = 3; // Năng lượng mất đi nếu không tìm thấy con mồi
+
+    public static void setMaxEnergy(int maxEnergy) {
+        Carnivore.maxEnergy = maxEnergy;
+    }
+
+    public static void setVisionRange(int visionRange) {
+        Carnivore.visionRange = visionRange;
+    }
+
+    public static void setEnergyGainPercentage(double energyGainPercentage) {
+        Carnivore.energyGainPercentage = energyGainPercentage;
+    }
+
+    public static void setEnergyThresholdForReproduction(int energyThresholdForReproduction) {
+        Carnivore.energyThresholdForReproduction = energyThresholdForReproduction;
+    }
+
+    public static void setEnergyDecay(int energyDecay) {
+        Carnivore.energyDecay = energyDecay;
+    }
+
+    public static void setMoveSpeed(int moveSpeed) {
+        Carnivore.moveSpeed = moveSpeed;
+    }
+
+    public static int getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    public static double getEnergyGainPercentage() {
+        return energyGainPercentage;
+    }
+
+    public static int getEnergyThresholdForReproduction() {
+        return energyThresholdForReproduction;
+    }
+
+    public static int getEnergyDecay() {
+        return energyDecay;
+    }
+    
 
     public Carnivore(int energy, int xPos, int yPos) {
         super(energy, xPos, yPos);
@@ -15,10 +58,14 @@ public class Carnivore extends Animal {
 
     @Override
     public int getMoveSpeed() {
-        return 3; // Tốc độ di chuyển của Carnivore
+        return moveSpeed;
     }
 
     @Override
+    public int getVisionRange() {
+        return visionRange;
+    }
+
     public void move(Organism[][] map) {
         Environment env = new Environment(map.length, map[0].length);
         List<Herbivore> herbivores = env.getAllHerbivores();
@@ -35,7 +82,7 @@ public class Carnivore extends Animal {
         // Tìm Herbivore gần nhất trong phạm vi VISION_RANGE
         for (Herbivore herbivore : herbivores) {
             double distance = calculateDistance(this.xPos, this.yPos, herbivore.getxPos(), herbivore.getyPos());
-            if (distance < minDistance && distance <= VISION_RANGE) {
+            if (distance < minDistance && distance <= visionRange) {
                 nearestHerbivore = herbivore;
                 minDistance = distance;
             }
@@ -52,12 +99,12 @@ public class Carnivore extends Animal {
                 this.xPos = newX;
                 this.yPos = newY;
                 map[this.xPos][this.yPos] = this; // Di chuyển đến ô mới
-                this.energy -= ENERGY_DECAY; // Giảm năng lượng vì đã di chuyển
+                this.energy -= energyDecay; // Giảm năng lượng vì đã di chuyển
             }
 
             // Nếu Carnivore di chuyển đến vị trí của Herbivore, nó sẽ tiêu thụ Herbivore
             if (this.xPos == nearestHerbivore.getxPos() && this.yPos == nearestHerbivore.getyPos()) {
-                consumeHerbivore(nearestHerbivore);
+                eat(nearestHerbivore);
                 map[this.xPos][this.yPos] = this; // Carnivore thay thế vị trí của Herbivore
             }
         } else {
@@ -65,22 +112,22 @@ public class Carnivore extends Animal {
             super.move(map); // Di chuyển ngẫu nhiên nếu không tìm thấy Herbivore
         }
 
-        if (this.energy > ENERGY_THRESHOLD_FOR_REPRODUCTION) {
+        if (this.energy > energyThresholdForReproduction) {
             reproduce(map);
         }
     }
 
-    private void consumeHerbivore(Herbivore herbivore) {
-        int gainedEnergy = (int) (herbivore.getEnergy() * ENERGY_GAIN_PERCENTAGE);
+    public void eat(Herbivore herbivore) {
+        int gainedEnergy = (int) (herbivore.getEnergy() * energyGainPercentage);
         this.energy += gainedEnergy; // Tăng năng lượng của Carnivore
         herbivore.setEnergy(0); // Xoá năng lượng của Herbivore (để loại bỏ nó)
     }
 
     private void loseEnergy() {
-        this.energy -= ENERGY_DECAY; // Mất năng lượng nếu không tìm thấy thức ăn
+        this.energy -= energyDecay; // Mất năng lượng nếu không tìm thấy thức ăn
     }
 
-    private void reproduce(Organism[][] map) {
+    public void reproduce(Organism[][] map) {
         int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
 
         for (int[] direction : directions) {
