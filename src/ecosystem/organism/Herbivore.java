@@ -56,7 +56,7 @@ public class Herbivore extends Animal {
 
     }
     public void act(Organism[][] map) {
-       
+
         Map<String, List<int[]>> detected = detect(map);
         List<int[]> detectedCarnivores = detected.get("DetectedCarnivores");
         List<int[]> validMoves = detected.get("ValidMoves");
@@ -69,13 +69,11 @@ public class Herbivore extends Animal {
                 return;
             }
         }
-
         // sinh san neu du dieu kien
         if (this.getEnergy() >= energyThresholdForReproduction) {
             reproduce(map);
             return;
         }
-
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 int neighborX = this.getxPos() + dx;
@@ -160,10 +158,10 @@ public class Herbivore extends Animal {
     private void lose_energy(Organism[][] map){
         this.energy = -energyDecay;
         if (this.energy<=0) {
-            map[this.getxPos()][this.getyPos()] = null; 
+            map[this.getxPos()][this.getyPos()] = null;
         }
     }
-    
+
     // Getter và Setter cho các thuộc tính của Herbivore
     public int getEnergy() {
         return super.getEnergy();
@@ -172,6 +170,7 @@ public class Herbivore extends Animal {
     public void setEnergy(int energy) {
         super.setEnergy(energy);
     }
+
 
     public int getxPos() {
         return super.getxPos();
