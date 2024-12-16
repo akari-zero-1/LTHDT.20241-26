@@ -1,5 +1,6 @@
 package src.ecosystem;
 
+import src.ecosystem.environment.Environment;
 import src.ecosystem.gui.EcosystemGUI;
 import src.ecosystem.organism.*;
 
@@ -19,16 +20,16 @@ public class EcosystemApp {
             int x = random.nextInt(width);
             int y = random.nextInt(height);
             if (random.nextBoolean()) {
-                environment.addOrganism(new Plant(10, x, y));
+                environment.addOrganism(new Plant(10), x, y));
             } else {
-                environment.addOrganism(new Sheep(20, x, y));
+                environment.addOrganism(new Sheep(20), x, y));
             }
         }
 
         for (int i = 0; i < 5; i++) {
             int x = random.nextInt(width);
             int y = random.nextInt(height);
-            environment.addOrganism(new Wolf(30, x, y));
+            environment.addOrganism(new Wolf(30), x, y));
         }
 
         // Tạo GUI

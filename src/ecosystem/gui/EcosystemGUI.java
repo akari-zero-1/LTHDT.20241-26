@@ -1,6 +1,6 @@
 package src.ecosystem.gui;
 
-import src.ecosystem.Environment;
+import src.ecosystem.environment.*;
 import src.ecosystem.organism.*;
 
 import javax.swing.*;
