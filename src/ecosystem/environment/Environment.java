@@ -69,6 +69,25 @@ public class Environment {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
+    public void displayGrid() {
+        System.out.println("Step: " + timeStep);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (grid[j][i] == null) {
+                    System.out.print(". ");
+                } else if (grid[j][i] instanceof Plant) {
+                    System.out.print("P ");
+                } else if (grid[j][i] instanceof Herbivore) {
+                    System.out.print("H "); // Hiển thị Herbivore là "H"
+                } else if (grid[j][i] instanceof Carnivore) {
+                    System.out.print("C "); // Hiển thị Carnivore là "C"
+                } else {
+                    System.out.print("? "); // Dự phòng nếu có lớp mới không được xác định
+                }
+            }
+            System.out.println();
+        }
+    }
 
     public void populateRandomly(int numPlants, int numAnimals) {
         Random random = new Random();

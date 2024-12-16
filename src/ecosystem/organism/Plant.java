@@ -5,6 +5,10 @@ public class Plant extends Organism {
     public static int reproductionRange = 2;
     public static int reproductionThreshold = 20;
 
+    public Plant(int energy) {
+        super(energy);
+    }
+
     public static void setEnergyGain(int energyGain) {
         Plant.energyGain = energyGain;
     }

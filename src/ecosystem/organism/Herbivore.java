@@ -13,6 +13,11 @@ public class Herbivore extends Animal {
     public Herbivore(int energy, int xPos, int yPos) {
         super(energy, xPos, yPos);
     }
+
+    public Herbivore(int energy) {
+        super(energy);
+    }
+
     @Override
     public int getMoveSpeed() {
         return moveSpeed;
