@@ -56,11 +56,12 @@ public class Herbivore extends Animal {
 
     }
     public void act(Organism[][] map) {
-        int ateFood =0;
+       
         Map<String, List<int[]>> detected = detect(map);
         List<int[]> detectedCarnivores = detected.get("DetectedCarnivores");
         List<int[]> validMoves = detected.get("ValidMoves");
         List<int[]> detectedPlants = detected.get("DetectedPlants");
+
         if (!detectedCarnivores.isEmpty()) {
             int[] escapePosition = findEscapePosition(detectedCarnivores, validMoves);
             if (escapePosition != null) {
@@ -83,6 +84,7 @@ public class Herbivore extends Animal {
                     eat_Plant(map, neighborX, neighborY);
                     ateFood = 1;
                     return;
+
                 }
             }
         }
@@ -95,6 +97,7 @@ public class Herbivore extends Animal {
         if (ateFood ==0) {
             this.setEnergy(this.energy -energyDecay);
         }
+
     }
 
     // Tìm vị trí để chạy trốn khỏi động vật ăn thịt
@@ -144,7 +147,6 @@ public class Herbivore extends Animal {
 
         }
     }
-
     // Di chuyển ngẫu nhiên nếu không có hành động ưu tiên nào
     private void moveRandomly(Organism[][] map, List<int[]> validMoves) {
         if (validMoves.isEmpty()) {
@@ -155,7 +157,13 @@ public class Herbivore extends Animal {
             break;
         }
     }
-
+    private void lose_energy(Organism[][] map){
+        this.energy = -energyDecay;
+        if (this.energy<=0) {
+            map[this.getxPos()][this.getyPos()] = null; 
+        }
+    }
+    
     // Getter và Setter cho các thuộc tính của Herbivore
     public int getEnergy() {
         return super.getEnergy();
