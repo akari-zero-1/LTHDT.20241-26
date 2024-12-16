@@ -22,39 +22,39 @@ public class Herbivore extends Animal {
         return visionRange;
     }
     @Override
-        public void reproduce(Organism[][] map) {
-            if (this.getEnergy() >= energyThresholdForReproduction) {
-                 int gridWidth = map.length;
-                 int gridHeight = map[0].length;
-                  
-                  for (int dx = -1; dx <= 1; dx++) {
-                    for (int dy = -1; dy <= 1; dy++) {
-                        if (dx == 0 && dy == 0)
-                            continue;
-                        int newX = this.xPos + dx;
-                        int newY = this.yPos + dy;
-                        if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight && map[newX][newY] == null) {
-                            int energy_new = this.energy / 2;
-                            Herbivore offspring = new Herbivore(energy_new, newX, newY);
-                            map[newX][newY]=offspring;
-                            this.energy = this.energy - energy_new;// nang luong cua me giam di 1 nua
-                            break;
-                        }
+    public void reproduce(Organism[][] map) {
+        if (this.getEnergy() >= energyThresholdForReproduction) {
+            int gridWidth = map.length;
+            int gridHeight = map[0].length;
+
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (dx == 0 && dy == 0)
+                        continue;
+                    int newX = this.xPos + dx;
+                    int newY = this.yPos + dy;
+                    if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight && map[newX][newY] == null) {
+                        int energy_new = this.energy / 2;
+                        Herbivore offspring = new Herbivore(energy_new, newX, newY);
+                        map[newX][newY]=offspring;
+                        this.energy = this.energy - energy_new;// nang luong cua me giam di 1 nua
+                        break;
                     }
                 }
             }
         }
+    }
     public void eat_Plant(Organism[][] map, int plantX, int plantY) {
         Plant plant = (Plant) map[plantX][plantY];
         int energy_current =this.getEnergy() + (int) (plant.getEnergy() * 0.1);
         this.setEnergy(energy_current); // Tăng năng lượng
-        plant.setEnergy(0); 
+        plant.setEnergy(0);
         map[plantX][plantY] = null; // Xóa cây khỏi map
         this.setxPos(plantX);
         this.setyPos(plantY);
         map[plantX][plantY] = this;
 
-    } 
+    }
     public void act(Organism[][] map) {
        
         Map<String, List<int[]>> detected = detect(map);
@@ -66,33 +66,38 @@ public class Herbivore extends Animal {
             int[] escapePosition = findEscapePosition(detectedCarnivores, validMoves);
             if (escapePosition != null) {
                 moveToPosition(escapePosition[0], escapePosition[1], map,validMoves);
-                return;  
+                return;
             }
         }
+
         // sinh san neu du dieu kien
         if (this.getEnergy() >= energyThresholdForReproduction) {
             reproduce(map);
-            return;  
-        }  
+            return;
+        }
+
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 int neighborX = this.getxPos() + dx;
                 int neighborY = this.getyPos() + dy;
                 if (neighborX >= 0 && neighborX < map.length && neighborY >= 0 && neighborY < map[0].length && map[neighborX][neighborY] instanceof Plant) {
                     eat_Plant(map, neighborX, neighborY);
-                  
-                    return; 
+                    ateFood = 1;
+                    return;
+
                 }
             }
         }
         if (!detectedPlants.isEmpty()) {
-            int[] plantPosition = detectedPlants.get(0); 
+            int[] plantPosition = detectedPlants.get(0);
             moveToPosition(plantPosition[0], plantPosition[1], map,validMoves);
-            return; 
+            return;
         }
         moveRandomly(map,validMoves);
-        lose_energy(map);
-      
+        if (ateFood ==0) {
+            this.setEnergy(this.energy -energyDecay);
+        }
+
     }
 
     // Tìm vị trí để chạy trốn khỏi động vật ăn thịt
@@ -102,11 +107,11 @@ public class Herbivore extends Animal {
         for (int[] carnivorePos : detectedCarnivores) {
             for(int[] Move : validMoves){
                 int distance = (int) Math.sqrt(Math.pow(Move[0] -carnivorePos[0], 2) + Math.pow(Move[1] -carnivorePos[1], 2));
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                escapePosition = findFartherPosition(validMoves, carnivorePos[0], carnivorePos[1]);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    escapePosition = findFartherPosition(validMoves, carnivorePos[0], carnivorePos[1]);
+                }
             }
-        }
         }
         return escapePosition;
     }
@@ -134,22 +139,22 @@ public class Herbivore extends Animal {
                 break;
             }
         }
-            if (isValidMove ==1) {
-            map[this.getxPos()][this.getyPos()] = null; 
+        if (isValidMove ==1) {
+            map[this.getxPos()][this.getyPos()] = null;
             this.setxPos(targetX);
             this.setyPos(targetY);
-            map[targetX][targetY] = this;  
-                
-}
+            map[targetX][targetY] = this;
+
+        }
     }
     // Di chuyển ngẫu nhiên nếu không có hành động ưu tiên nào
     private void moveRandomly(Organism[][] map, List<int[]> validMoves) {
         if (validMoves.isEmpty()) {
-            return; 
+            return;
         }
         for (int[] move : validMoves) {
             moveToPosition(move[0], move[1],map,validMoves);
-            break; 
+            break;
         }
     }
     private void lose_energy(Organism[][] map){

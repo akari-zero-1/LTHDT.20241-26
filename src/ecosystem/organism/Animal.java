@@ -1,51 +1,77 @@
 package src.ecosystem.organism;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+import java.lang.Math;
 
 public abstract class Animal extends Organism {
-    public static int energyDecay = 10;
-
     public Animal(int energy, int xPos, int yPos) {
         super(energy, xPos, yPos);
     }
 
     public abstract int getMoveSpeed();
 
-    public void move(Organism[][] map) {
+    public abstract int getVisionRange();
+
+    public abstract void reproduce(Organism[][] map);
+
+    private boolean isValidPosition(int x, int y, int gridWidth, int gridHeight, Organism[][] map) {
+        return x >= 0 && x < gridWidth && y >= 0 && y < gridHeight && map[x][y] == null;
+    }
+
+    public Map<String, List<int[]>> detect(Organism[][] map) {
         int gridWidth = map.length;
         int gridHeight = map[0].length;
-        int moveSpeed = getMoveSpeed();
+        int detectionRange = getVisionRange();
+
+        int currentX = this.getxPos();
+        int currentY = this.getyPos();
 
         List<int[]> validMoves = new ArrayList<>();
+        List<int[]> detectedPlantList = new ArrayList<>();
+        List<int[]> detectedHerbivorList = new ArrayList<>();
+        List<int[]> detectedCarnivorList = new ArrayList<>();
 
-        //Duyệt qua các ô trong khoảng moveSpeed
-        for (int dx = -moveSpeed; dx <= moveSpeed; dx++) {
-            for (int dy = -moveSpeed; dy <= moveSpeed; dy++) {
-                int newX = this.xPos + dx;
-                int newY = this.yPos + dy;
+        // Duyệt qua tất cả các ô trong detectionRange
+        for (int radius = 1; radius <= detectionRange; radius++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dy = -radius; dy <= radius; dy++) {
+                    if (Math.abs(dx) == radius || Math.abs(dy) == radius) {
+                        int newX = currentX + dx;
+                        int newY = currentY + dy;
 
-                // Kiểm tra ô có nằm trong lưới và hợp lệ
-                if (newX >= 0 && newX < gridWidth && newY >= 0 && newY < gridHeight) {
-                    if (map[newX][newY] == null) { // Ô trống
-                        validMoves.add(new int[] { newX, newY });
+                        // Kiểm tra xem vị trí có hợp lệ không
+                        if (isValidPosition(newX, newY, gridWidth, gridHeight, map)) {
+                            validMoves.add(new int[] { newX, newY }); 
+
+                            Organism target = map[newX][newY];
+                            if (target != null) {
+                                if (target instanceof Plant) {
+                                    detectedPlantList.add(new int[] { newX, newY });
+                                } else if (target instanceof Herbivore) {
+                                    detectedHerbivorList.add(new int[] { newX, newY });
+                                } else if (target instanceof Carnivore) {
+                                    detectedCarnivorList.add(new int[] { newX, newY });
+                                }
+                            }
+                        }
                     }
-                }
+                }    
             }
         }
+        
 
-        if (!validMoves.isEmpty()) {
-            Random random = new Random();
-            int[] selectedMove = validMoves.get(random.nextInt(validMoves.size()));
+        Map<String, List<int[]>> result = new HashMap<>();
+        result.put("ValidMoves", validMoves);
+        result.put("DetectedPlants", detectedPlantList);
+        result.put("DetectedHerbivores", detectedHerbivorList);
+        result.put("DetectedCarnivores", detectedCarnivorList);
 
-            // Di chuyển đến ô mới
-            map[this.xPos][this.yPos] = null;
-            this.xPos = selectedMove[0];
-            this.yPos = selectedMove[1];
-            map[this.xPos][this.yPos] = this;
-            this.energy -= energyDecay;
-        }
+        return result;
+    }
 
+    public void act(Organism[][] grid) {
     }
 }
