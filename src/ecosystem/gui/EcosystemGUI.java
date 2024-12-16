@@ -19,6 +19,9 @@ public class EcosystemGUI extends JPanel {
         setPreferredSize(new Dimension(environment.getWidth() * CELL_SIZE, environment.getHeight() * CELL_SIZE));
     }
 
+    /**
+     * Tải hình ảnh từ thư mục resources.
+     */
     private void loadImages() {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         grassImage = toolkit.getImage("resources/grass.png");
@@ -27,12 +30,18 @@ public class EcosystemGUI extends JPanel {
         wolfImage = toolkit.getImage("resources/wolf.png");
     }
 
+    /**
+     * Vẽ toàn bộ giao diện hệ sinh thái.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawGrid(g); // Vẽ hệ sinh thái
+        drawGrid(g);
     }
 
+    /**
+     * Vẽ lưới môi trường và các sinh vật.
+     */
     private void drawGrid(Graphics g) {
         for (int x = 0; x < environment.getWidth(); x++) {
             for (int y = 0; y < environment.getHeight(); y++) {
@@ -54,7 +63,10 @@ public class EcosystemGUI extends JPanel {
         }
     }
 
+    /**
+     * Làm mới giao diện.
+     */
     public void refresh() {
-        repaint(); // Cập nhật lại toàn bộ giao diện
+        repaint();
     }
 }

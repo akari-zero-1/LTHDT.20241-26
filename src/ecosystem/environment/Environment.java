@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Random;
 
 public class Environment {
-    private int width; // Chiều rộng lưới
+    private int width; // Chiều rộng lướia
     private int height; // Chiều cao lưới
     private Organism[][] grid; // Lưới chứa sinh vật
     private List<Organism> organisms; // Danh sách tất cả sinh vật
     private int timeStep; // Số bước thời gian đã trôi qua
 
-    // Constructor
     public Environment(int width, int height) {
         this.width = width;
         this.height = height;
@@ -21,48 +20,6 @@ public class Environment {
         this.timeStep = 0;
     }
 
-    // Getters and Setters
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public Organism[][] getGrid() {
-        return grid;
-    }
-
-    public void setGrid(Organism[][] grid) {
-        this.grid = grid;
-    }
-
-    public List<Organism> getOrganisms() {
-        return organisms;
-    }
-
-    public void setOrganisms(List<Organism> organisms) {
-        this.organisms = organisms;
-    }
-
-    public int getTimeStep() {
-        return timeStep;
-    }
-
-    public void setTimeStep(int timeStep) {
-        this.timeStep = timeStep;
-    }
-
-    // Methods
     public void addOrganism(Organism organism, int x, int y) {
         if (isValidCell(x, y) && grid[x][y] == null) {
             grid[x][y] = organism;
@@ -79,7 +36,7 @@ public class Environment {
         // Cho tất cả sinh vật hành động
         for (Organism organism : organisms) {
             if (organism instanceof Animal) {
-                ((Animal) organism).move(grid);
+                ((Animal) organism).act(grid);
             } else if (organism instanceof Plant) {
                 ((Plant) organism).act();
                 ((Plant) organism).reproduce(grid);
@@ -121,11 +78,11 @@ public class Environment {
                 } else if (grid[j][i] instanceof Plant) {
                     System.out.print("P ");
                 } else if (grid[j][i] instanceof Herbivore) {
-                    System.out.print("H ");
+                    System.out.print("H "); // Hiển thị Herbivore là "H"
                 } else if (grid[j][i] instanceof Carnivore) {
-                    System.out.print("C ");
+                    System.out.print("C "); // Hiển thị Carnivore là "C"
                 } else {
-                    System.out.print("? ");
+                    System.out.print("? "); // Dự phòng nếu có lớp mới không được xác định
                 }
             }
             System.out.println();
@@ -155,7 +112,6 @@ public class Environment {
             } while (grid[x][y] != null);
         }
     }
-
     public List<Plant> getAllProducers() {
         List<Plant> producers = new ArrayList<>();
         for (Organism organism : organisms) {
@@ -203,6 +159,6 @@ public class Environment {
             }
         }
 
-        System.out.printf("🔍 Plants: %d, Herbivores: %d, Carnivores: %d%n", plantCount, herbivoreCount, carnivoreCount);
+        System.out.printf("🔍 Số lượng hiện tại — Plants: %d, Herbivores: %d, Carnivores: %d%n", plantCount, herbivoreCount, carnivoreCount);
     }
 }
