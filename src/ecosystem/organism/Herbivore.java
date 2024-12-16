@@ -80,8 +80,9 @@ public class Herbivore extends Animal {
                 int neighborY = this.getyPos() + dy;
                 if (neighborX >= 0 && neighborX < map.length && neighborY >= 0 && neighborY < map[0].length && map[neighborX][neighborY] instanceof Plant) {
                     eat_Plant(map, neighborX, neighborY);
-
+                    ateFood = 1;
                     return;
+
                 }
             }
         }
@@ -91,7 +92,9 @@ public class Herbivore extends Animal {
             return;
         }
         moveRandomly(map,validMoves);
-        lose_energy(map);
+        if (ateFood ==0) {
+            this.setEnergy(this.energy -energyDecay);
+        }
 
     }
 
@@ -167,6 +170,7 @@ public class Herbivore extends Animal {
     public void setEnergy(int energy) {
         super.setEnergy(energy);
     }
+
 
     public int getxPos() {
         return super.getxPos();

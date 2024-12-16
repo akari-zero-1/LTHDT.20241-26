@@ -1,5 +1,4 @@
 package src.ecosystem.organism;
-
 import java.util.*;
 
 public class Carnivore extends Animal {
@@ -7,8 +6,6 @@ public class Carnivore extends Animal {
     private static int visionRange = 4;
     private static int energyThresholdReproduction = 100;
     private static int energyDecay = 3;
-
-
     public Carnivore(int xPos, int yPos, int energy) {
         super(xPos, yPos, energy);
     }
@@ -17,6 +14,7 @@ public class Carnivore extends Animal {
     public int getMoveSpeed() {
         return moveSpeed; // Tốc độ di chuyển của Carnivore
     }
+
 
     @Override
     public int getVisionRange() {
@@ -47,7 +45,10 @@ public class Carnivore extends Animal {
             int[] herbivorePos = detections.get("DetectedHerbivores").get(0); // Lấy con mồi đầu tiên
             chaseHerbivore(map, herbivorePos[0], herbivorePos[1]);
             return;
+
         }
+        return detectionResults;
+    }
 
         // 5. Di chuyển ngẫu nhiên nếu không tìm thấy con mồi
         if (!detections.get("ValidMoves").isEmpty()) {
@@ -127,6 +128,7 @@ public class Carnivore extends Animal {
             die();
         }
     }
+
 
     // Phương thức để đánh dấu rằng sinh vật đã chết
     private void die() {
