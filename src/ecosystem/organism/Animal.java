@@ -11,6 +11,10 @@ public abstract class Animal extends Organism {
         super(energy, xPos, yPos);
     }
 
+    public Animal(int energy) {
+        super(energy);
+    }
+
     public abstract int getMoveSpeed();
 
     public abstract int getVisionRange();

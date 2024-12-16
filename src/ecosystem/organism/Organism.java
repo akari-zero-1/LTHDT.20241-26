@@ -10,6 +10,10 @@ public abstract class Organism {
         this.xPos = xPos;
         this.yPos = yPos;
     }
+    public Organism(int energy) {
+        this.energy = energy;
+
+    }
 
     public int getEnergy() {
         return energy;

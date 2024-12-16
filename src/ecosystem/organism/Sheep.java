@@ -5,7 +5,7 @@ public class Sheep extends Herbivore{
         super(energy, xPos, yPos);
     }
 
-        public Sheep(int energy) {
+    public Sheep(int energy) {
         super(energy);
     }
 }

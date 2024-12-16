@@ -6,6 +6,6 @@ public class Wolf extends Carnivore{
     }
 
     public Wolf(int energy) {
-        super();
+        super(energy);
     }
 }
