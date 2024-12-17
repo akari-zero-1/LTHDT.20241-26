@@ -2,6 +2,7 @@ package src.ecosystem.environment;
 import src.ecosystem.organism.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -12,12 +13,20 @@ public class Environment {
     private List<Organism> organisms; // Danh sách tất cả sinh vật
     private int timeStep; // Số bước thời gian đã trôi qua
 
+    private int plantCount;
+    private int herbivoreCount;
+    private int carnivoreCount;
+
     public Environment(int width, int height) {
         this.width = width;
         this.height = height;
         this.grid = new Organism[width][height];
         this.organisms = new ArrayList<>();
         this.timeStep = 0;
+
+        this.plantCount = 0;
+        this.herbivoreCount = 0;
+        this.carnivoreCount = 0;
     }
 
     public void addOrganism(Organism organism, int x, int y) {
@@ -26,36 +35,49 @@ public class Environment {
             organism.setxPos(x);
             organism.setyPos(y);
             organisms.add(organism);
+
+            if (organism instanceof Plant) {
+                plantCount++;
+            } else if (organism instanceof Herbivore) {
+                herbivoreCount++;
+            } else if (organism instanceof Carnivore) {
+                carnivoreCount++;
+            }
         }
     }
 
     public void simulateStep() {
         timeStep++;
-        List<Organism> newOrganisms = new ArrayList<>();
-
-        // Cho tất cả sinh vật hành động
-        for (Organism organism : organisms) {
-            if (organism instanceof Animal) {
-                ((Animal) organism).act(grid);
-            } else if (organism instanceof Plant) {
-                ((Plant) organism).act();
-                ((Plant) organism).reproduce(grid);
+        this.plantCount = 0;
+        this.herbivoreCount = 0;
+        this.carnivoreCount = 0;
+        this.organisms = new ArrayList<>();
+        // Iterate over the 2D grid
+        for (int x = 0; x < grid.length; x++) {
+            for (int y = 0; y < grid[x].length; y++) {
+                Organism organism = grid[x][y];
+    
+                if (organism != null && organism.isAlive()) {
+                    organisms.add(organism);
+                    if (organism instanceof Carnivore) {
+                        ((Carnivore) organism).act(grid, organisms);
+                        carnivoreCount++;
+                    } else if (organism instanceof Herbivore) {
+                        ((Herbivore) organism).act(grid, organisms);
+                        herbivoreCount++;
+                    } else if (organism instanceof Plant) {
+                        ((Plant) organism).act();
+                        ((Plant) organism).reproduce(grid);
+                        plantCount++;
+                    }
+                }
+    
+                // Check and remove dead organisms
+                if (organism != null && !organism.isAlive()) {
+                    grid[x][y] = null; // Remove dead organism from the grid
+                }
             }
         }
-
-        // Loại bỏ sinh vật đã chết
-        cleanUpDeadOrganisms();
-    }
-
-    private void cleanUpDeadOrganisms() {
-        List<Organism> toRemove = new ArrayList<>();
-        for (Organism organism : organisms) {
-            if (organism.getEnergy() <= 0) {
-                grid[organism.getxPos()][organism.getyPos()] = null;
-                toRemove.add(organism);
-            }
-        }
-        organisms.removeAll(toRemove);
     }
 
     public Organism getOrganismAt(int x, int y) {
@@ -71,6 +93,7 @@ public class Environment {
 
     public void displayGrid() {
         System.out.println("Step: " + timeStep);
+        System.out.println("Plant: "+ plantCount + "\nHerbivor: "+ herbivoreCount +"\nCarnivore: "+ carnivoreCount);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (grid[j][i] == null) {
@@ -89,7 +112,7 @@ public class Environment {
         }
     }
 
-    public void populateRandomly(int numPlants, int numAnimals) {
+    public void populateRandomly(int numPlants, int numCarnivore, int numHerbivore, int defaultEnergy) {
         Random random = new Random();
 
         // Thêm cây ngẫu nhiên
@@ -103,13 +126,25 @@ public class Environment {
             addOrganism(new Plant(20, x, y), x, y);
         }
 
-        // Thêm động vật ngẫu nhiên
-        for (int i = 0; i < numAnimals; i++) {
+        // Thêm động vật ăn thịt
+        for (int i = 0; i < numCarnivore; i++) {
             int x, y;
             do {
                 x = random.nextInt(width);
                 y = random.nextInt(height);
             } while (grid[x][y] != null);
+
+            addOrganism(new Carnivore(x,y,defaultEnergy), x, y);
+        }
+
+        for (int i = 0; i < numHerbivore; i++) {
+            int x, y;
+            do {
+                x = random.nextInt(width);
+                y = random.nextInt(height);
+            } while (grid[x][y] != null);
+            
+            addOrganism(new Herbivore(x,y,defaultEnergy), x, y);
         }
     }
     public List<Plant> getAllProducers() {
@@ -161,4 +196,45 @@ public class Environment {
 
         System.out.printf("🔍 Số lượng hiện tại — Plants: %d, Herbivores: %d, Carnivores: %d%n", plantCount, herbivoreCount, carnivoreCount);
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public Organism[][] getGrid() {
+        return grid;
+    }
+
+    public List<Organism> getOrganisms() {
+        return organisms;
+    }
+
+    public int getTimeStep() {
+        return timeStep;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setGrid(Organism[][] grid) {
+        this.grid = grid;
+    }
+
+    public void setOrganisms(List<Organism> organisms) {
+        this.organisms = organisms;
+    }
+
+    public void setTimeStep(int timeStep) {
+        this.timeStep = timeStep;
+    }
+
 }
