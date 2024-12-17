@@ -36,7 +36,7 @@ public class EcosystemApp {
         JFrame frame = new JFrame("Ecosystem Simulator");
         EcosystemGUI gui = new EcosystemGUI(environment);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Đóng ứng dụng khi đóng cửa sổ
-        frame.add(ecosystemGUI); // Thêm EcosystemGUI vào JFrame
+        frame.add(EcosystemGUI); // Thêm EcosystemGUI vào JFrame
         frame.pack(); // Tự động điều chỉnh kích thước JFrame
         frame.setLocationRelativeTo(null); // Đưa JFrame vào giữa màn hình
         frame.setVisible(true); // Hiển thị JFrame
