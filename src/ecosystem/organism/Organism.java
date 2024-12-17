@@ -4,6 +4,7 @@ public abstract class Organism {
     public int energy;
     public int xPos;
     public int yPos;
+    public boolean isAlive = true;
 
     public Organism(int energy, int xPos, int yPos) {
         this.energy = energy;
@@ -38,6 +39,14 @@ public abstract class Organism {
     public void setyPos(int yPos) {
         this.yPos = yPos;
     }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean isAlive) {
+        this.isAlive = isAlive;
+    };
 
     @Override
     public String toString() {
