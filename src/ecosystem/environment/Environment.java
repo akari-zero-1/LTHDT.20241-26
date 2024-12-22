@@ -2,13 +2,14 @@ package src.ecosystem.environment;
 import src.ecosystem.organism.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 public class Environment {
-    private int width; // Chiều rộng lướia
+    private int width; // Chiều rộng lưới
     private int height; // Chiều cao lưới
+    private double plantSpawnRate; //tỉ lệ sinh cỏ
+
     private Organism[][] grid; // Lưới chứa sinh vật
     private List<Organism> organisms; // Danh sách tất cả sinh vật
     private int timeStep; // Số bước thời gian đã trôi qua
@@ -17,9 +18,10 @@ public class Environment {
     private int herbivoreCount;
     private int carnivoreCount;
 
-    public Environment(int width, int height) {
+    public Environment(int width, int height,double plantSpawnRate) {
         this.width = width;
         this.height = height;
+        this.plantSpawnRate = plantSpawnRate;
         this.grid = new Organism[width][height];
         this.organisms = new ArrayList<>();
         this.timeStep = 0;
@@ -27,6 +29,18 @@ public class Environment {
         this.plantCount = 0;
         this.herbivoreCount = 0;
         this.carnivoreCount = 0;
+    }
+
+    public int getPlantCount() {
+        return plantCount;
+    }
+
+    public int getHerbivoreCount() {
+        return herbivoreCount;
+    }
+
+    public int getCarnivoreCount() {
+        return carnivoreCount;
     }
 
     public void addOrganism(Organism organism, int x, int y) {
@@ -48,27 +62,22 @@ public class Environment {
 
     public void simulateStep() {
         timeStep++;
-        this.plantCount = 0;
-        this.herbivoreCount = 0;
-        this.carnivoreCount = 0;
+        System.out.println("Time Step: " + timeStep);
         this.organisms = new ArrayList<>();
+        List<Organism> actedOrganisms = new ArrayList<>();
         // Iterate over the 2D grid
         for (int x = 0; x < grid.length; x++) {
             for (int y = 0; y < grid[x].length; y++) {
                 Organism organism = grid[x][y];
-    
-                if (organism != null && organism.isAlive()) {
-                    organisms.add(organism);
-                    if (organism instanceof Carnivore) {
-                        ((Carnivore) organism).act(grid, organisms);
-                        carnivoreCount++;
-                    } else if (organism instanceof Herbivore) {
-                        ((Herbivore) organism).act(grid, organisms);
-                        herbivoreCount++;
-                    } else if (organism instanceof Plant) {
-                        ((Plant) organism).act();
-                        ((Plant) organism).reproduce(grid);
-                        plantCount++;
+                if (organism != null && organism.isAlive() && !actedOrganisms.contains(organism)) {
+                    organism.act(grid, organisms);
+                    actedOrganisms.add(organism);
+                }
+                else if(organism == null){
+                    if (Math.random() < plantSpawnRate) {
+                        Plant newPlant = new Plant(x, y); 
+                        grid[x][y] = newPlant;         
+                        organisms.add(newPlant);             
                     }
                 }
     
@@ -78,6 +87,9 @@ public class Environment {
                 }
             }
         }
+
+        countOrganisms();
+        System.out.println("-----------------------------------");
     }
 
     public Organism getOrganismAt(int x, int y) {
@@ -112,7 +124,7 @@ public class Environment {
         }
     }
 
-    public void populateRandomly(int numPlants, int numCarnivore, int numHerbivore, int defaultEnergy) {
+    public void populateRandomly(int numPlants, int numCarnivore, int numHerbivore) {
         Random random = new Random();
 
         // Thêm cây ngẫu nhiên
@@ -123,7 +135,7 @@ public class Environment {
                 y = random.nextInt(height);
             } while (grid[x][y] != null);
 
-            addOrganism(new Plant(20, x, y), x, y);
+            addOrganism(new Plant(x, y), x, y);
         }
 
         // Thêm động vật ăn thịt
@@ -134,7 +146,7 @@ public class Environment {
                 y = random.nextInt(height);
             } while (grid[x][y] != null);
 
-            addOrganism(new Carnivore(x,y,defaultEnergy), x, y);
+            addOrganism(new Carnivore(x,y), x, y);
         }
 
         for (int i = 0; i < numHerbivore; i++) {
@@ -144,7 +156,7 @@ public class Environment {
                 y = random.nextInt(height);
             } while (grid[x][y] != null);
             
-            addOrganism(new Herbivore(x,y,defaultEnergy), x, y);
+            addOrganism(new Herbivore(x,y), x, y);
         }
     }
     public List<Plant> getAllProducers() {
@@ -194,7 +206,7 @@ public class Environment {
             }
         }
 
-        System.out.printf("🔍 Số lượng hiện tại — Plants: %d, Herbivores: %d, Carnivores: %d%n", plantCount, herbivoreCount, carnivoreCount);
+        System.out.printf("Numbers of organism - Plants: %d, Herbivores: %d, Carnivores: %d%n", plantCount, herbivoreCount, carnivoreCount);
     }
 
     public int getWidth() {
@@ -235,6 +247,12 @@ public class Environment {
 
     public void setTimeStep(int timeStep) {
         this.timeStep = timeStep;
+    }
+
+    @Override
+    public String toString() {
+        return "Environment [width=" + width + ", height=" + height + ", plantSpawnRate=" + plantSpawnRate +", timeStep=" + timeStep + ", plantCount="
+                + plantCount + ", herbivoreCount=" + herbivoreCount + ", carnivoreCount=" + carnivoreCount + "]";
     }
 
 }

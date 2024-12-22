@@ -13,8 +13,8 @@ public abstract class Animal extends Organism {
         super(energy, xPos, yPos);
     }
 
-    public Animal(int energy) {
-        super(energy);
+    public Animal(int xPos, int yPos) {
+        super(xPos, yPos);
     }
 
     public abstract int getMoveSpeed();
@@ -99,7 +99,8 @@ public abstract class Animal extends Organism {
     public void eat(Organism target, Organism[][] map, List<Organism> organisms) {
         if (target != null) {
             // Gain energy from the target
-            this.setEnergy(this.getEnergy() + target.getEnergy());
+            int energy = (int)(this.getEnergy() + target.getEnergy()*0.7);
+            this.setEnergy(energy);
             target.setAlive(false);
             map[target.getxPos()][target.getyPos()] = null;
         }
@@ -187,10 +188,6 @@ public abstract class Animal extends Organism {
         } else {
             return null;
         }
-    }
-
-    public void act(Organism[][] map, List<Organism> organisms) {
-
     }
 
 }

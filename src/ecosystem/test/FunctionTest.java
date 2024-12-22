@@ -31,7 +31,7 @@ class FunctionTest {
 
     private void testAddOrganism() {
         System.out.println("Running testAddOrganism");
-        environment = new Environment(10, 10);
+        environment = new Environment(10, 10,0.05);
         Organism plant = new Plant(20, 5, 5);
         environment.addOrganism(plant, 5, 5);
         Herbivore herbivore = new Herbivore(160, 7, 7);
@@ -47,13 +47,29 @@ class FunctionTest {
 
     private void testSimulateStep() {
         System.out.println("Running testSimulateStep");
-        environment = new Environment(10, 10);
-        Carnivore carnivore = new Carnivore(20, 5, 5);
-        environment.addOrganism(carnivore, 5, 5);
-        Herbivore herbivore = new Herbivore(30, 7, 7);
-        environment.addOrganism(herbivore, 7, 7);
-        //Organism plant = new Plant(20, 5, 5);
-        //environment.addOrganism(plant, 5, 5);
+        environment = new Environment(10, 10,0.05);
+        Herbivore herbivore = new Herbivore(0, 6,0);
+        environment.addOrganism(herbivore, 6, 6);
+        Organism plant = new Plant(20, 5, 5);
+        environment.addOrganism(plant, 5, 5);
+        environment.displayGrid();
+        environment.simulateStep();
+        environment.displayGrid();
+        environment.simulateStep();
+        environment.displayGrid();
+        environment.simulateStep();
+        environment.displayGrid();
+        environment.simulateStep();
+        environment.displayGrid();
+        environment.simulateStep();
+        environment.displayGrid();
+        environment.simulateStep();
+        environment.displayGrid();
+        environment.simulateStep();
+        environment.displayGrid();
+        environment.simulateStep();
+        environment.displayGrid();
+        environment.simulateStep();
         environment.displayGrid();
         environment.simulateStep();
         environment.displayGrid();
@@ -67,7 +83,7 @@ class FunctionTest {
 
     private void testCleanUpDeadOrganisms() {
         System.out.println("Running testCleanUpDeadOrganisms");
-        environment = new Environment(10, 10);
+        environment = new Environment(10, 10,5);
         Herbivore herbivore = new Herbivore(0, 7, 7);
         environment.addOrganism(herbivore, 7, 7);
         environment.displayGrid();
@@ -81,8 +97,8 @@ class FunctionTest {
 
     private void testPopulateRandomly() {
         System.out.println("Running testPopulateRandomly");
-        environment = new Environment(10, 10);
-        environment.populateRandomly(5, 3, 2, 30);
+        environment = new Environment(10, 10,0.0);
+        environment.populateRandomly(5, 3, 2);
         int plantCount = 0;
         int carnivoreCount = 0;
         int herbivoreCount = 0;
@@ -113,8 +129,8 @@ class FunctionTest {
 
     public static void main(String[] args) {
         FunctionTest test = new FunctionTest();
-        test.testAddOrganism();
-        //test.testSimulateStep();
+        //test.testAddOrganism();
+        test.testSimulateStep();
         //test.testCleanUpDeadOrganisms();
         //test.testPopulateRandomly();
     }
