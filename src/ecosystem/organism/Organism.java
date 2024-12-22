@@ -1,19 +1,23 @@
 package src.ecosystem.organism;
 
+import java.util.List;
+
 public abstract class Organism {
     public int energy;
     public int xPos;
     public int yPos;
-    public boolean isAlive = true;
+    public boolean isAlive;
 
     public Organism(int energy, int xPos, int yPos) {
         this.energy = energy;
         this.xPos = xPos;
         this.yPos = yPos;
+        this.isAlive = true;
     }
-    public Organism(int energy) {
-        this.energy = energy;
-
+    public Organism(int xPos, int yPos) {
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.isAlive = true;
     }
 
     public int getEnergy() {
@@ -48,8 +52,12 @@ public abstract class Organism {
         this.isAlive = isAlive;
     };
 
+    public void act(Organism[][] map, List<Organism> organisms) {
+
+    }
+
     @Override
     public String toString() {
-        return "Organism [energy=" + energy + ", xPos=" + xPos + ", yPos=" + yPos + "]";
+        return "Organism [energy=" + energy + ", xPos=" + xPos + ", yPos=" + yPos + " isAlive=" + isAlive +"]";
     }
 }
