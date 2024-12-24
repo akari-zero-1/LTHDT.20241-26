@@ -17,15 +17,15 @@ public class Carnivore extends Animal {
 
     public Carnivore(int xPos, int yPos) {
         super(xPos, yPos);
-        this.energy=defaultEnergy;
+        this.energy = defaultEnergy;
     }
 
     public void act(Organism[][] map, List<Organism> organisms) {
         Map<String, List<int[]>> detected = detect(map);
         List<int[]> detectedHerbivores = detected.get("DetectedHerbivores");
         List<int[]> validMoves = detected.get("ValidMoves");
-        //System.out.println("Carnivore"+detected);
-        //System.out.println(this);
+        // System.out.println("Carnivore"+detected);
+        // System.out.println(this);
         // Săn mồi
         if (!detectedHerbivores.isEmpty()) {
             int[] preyPos = detectedHerbivores.get(0); // Lấy tọa độ của con mồi đầu tiên
@@ -33,14 +33,16 @@ public class Carnivore extends Animal {
 
             if (closestMove != null) {
                 moveTo(closestMove[0], closestMove[1], map);
-                //System.out.println("Carnivore - Moving to " + closestMove[0] + ", " + closestMove[1]);
+                // System.out.println("Carnivore - Moving to " + closestMove[0] + ", " +
+                // closestMove[1]);
 
                 // Nếu đến được vị trí con mồi, ăn con mồi
                 if (Math.abs(this.getxPos() - preyPos[0]) <= 1 && Math.abs(this.getyPos() - preyPos[1]) <= 1) {
                     eat(map[preyPos[0]][preyPos[1]], map, organisms);
-                    //System.out.println("Carnivore  " + closestMove[0]+ ", " + closestMove[1] + "- Eating Herbivore at " + preyPos[0] + ", " + preyPos[1]);
+                    // System.out.println("Carnivore " + closestMove[0]+ ", " + closestMove[1] + "-
+                    // Eating Herbivore at " + preyPos[0] + ", " + preyPos[1]);
                     return;
-                }                
+                }
             }
         }
 
@@ -54,7 +56,8 @@ public class Carnivore extends Animal {
         if (!validMoves.isEmpty()) {
             int[] randomMove = validMoves.get((int) (Math.random() * validMoves.size()));
             moveTo(randomMove[0], randomMove[1], map);
-            //System.out.println("Carnivore Random Move to " + randomMove[0] + ", " + randomMove[1]);
+            // System.out.println("Carnivore Random Move to " + randomMove[0] + ", " +
+            // randomMove[1]);
         }
 
         loseEnergy();
@@ -74,7 +77,7 @@ public class Carnivore extends Animal {
 
     private void loseEnergy() {
         this.energy -= energyDecay;
-        if (this.energy<=0){
+        if (this.energy <= 0) {
             this.setAlive(false);
         }
     }

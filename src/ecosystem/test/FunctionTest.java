@@ -3,7 +3,6 @@ package src.ecosystem.test;
 import src.ecosystem.environment.Environment;
 import src.ecosystem.organism.*;
 
-
 class FunctionTest {
     private Environment environment;
 
@@ -11,13 +10,16 @@ class FunctionTest {
         Organism actual = environment.getOrganismAt(x, y);
         if (expected == null) {
             if (actual != null) {
-                System.out.println("Assertion failed: Expected null, but found " + actual.getClass().getSimpleName() + " at (" + x + ", " + y + ")");
+                System.out.println("Assertion failed: Expected null, but found " + actual.getClass().getSimpleName()
+                        + " at (" + x + ", " + y + ")");
             }
         } else {
             if (actual == null) {
-                System.out.println("Assertion failed: Expected " + expected.getClass().getSimpleName() + " at (" + x + ", " + y + "), but found null");
+                System.out.println("Assertion failed: Expected " + expected.getClass().getSimpleName() + " at (" + x
+                        + ", " + y + "), but found null");
             } else if (actual.getClass() != expected.getClass()) {
-                System.out.println("Assertion failed: Expected " + expected.getClass().getSimpleName() + ", but found " + actual.getClass().getSimpleName() + " at (" + x + ", " + y + ")");
+                System.out.println("Assertion failed: Expected " + expected.getClass().getSimpleName() + ", but found "
+                        + actual.getClass().getSimpleName() + " at (" + x + ", " + y + ")");
             }
         }
     }
@@ -31,7 +33,7 @@ class FunctionTest {
 
     private void testAddOrganism() {
         System.out.println("Running testAddOrganism");
-        environment = new Environment(10, 10,0.05);
+        environment = new Environment(10, 10, 0.05);
         Organism plant = new Plant(20, 5, 5);
         environment.addOrganism(plant, 5, 5);
         Herbivore herbivore = new Herbivore(160, 7, 7);
@@ -47,8 +49,8 @@ class FunctionTest {
 
     private void testSimulateStep() {
         System.out.println("Running testSimulateStep");
-        environment = new Environment(10, 10,0.05);
-        Herbivore herbivore = new Herbivore(0, 6,0);
+        environment = new Environment(10, 10, 0.05);
+        Herbivore herbivore = new Herbivore(0, 6, 0);
         environment.addOrganism(herbivore, 6, 6);
         Organism plant = new Plant(20, 5, 5);
         environment.addOrganism(plant, 5, 5);
@@ -75,7 +77,7 @@ class FunctionTest {
         environment.displayGrid();
         environment.simulateStep();
         environment.displayGrid();
-        //assertOrganismAtPosition(carnivore, 5, 5);
+        // assertOrganismAtPosition(carnivore, 5, 5);
         assertOrganismsCount(1);
         System.out.println("========================================");
         System.out.println("\n");
@@ -83,7 +85,7 @@ class FunctionTest {
 
     private void testCleanUpDeadOrganisms() {
         System.out.println("Running testCleanUpDeadOrganisms");
-        environment = new Environment(10, 10,5);
+        environment = new Environment(10, 10, 5);
         Herbivore herbivore = new Herbivore(0, 7, 7);
         environment.addOrganism(herbivore, 7, 7);
         environment.displayGrid();
@@ -97,7 +99,7 @@ class FunctionTest {
 
     private void testPopulateRandomly() {
         System.out.println("Running testPopulateRandomly");
-        environment = new Environment(10, 10,0.0);
+        environment = new Environment(10, 10, 0.0);
         environment.populateRandomly(5, 3, 2);
         int plantCount = 0;
         int carnivoreCount = 0;
@@ -129,9 +131,9 @@ class FunctionTest {
 
     public static void main(String[] args) {
         FunctionTest test = new FunctionTest();
-        //test.testAddOrganism();
+        // test.testAddOrganism();
         test.testSimulateStep();
-        //test.testCleanUpDeadOrganisms();
-        //test.testPopulateRandomly();
+        // test.testCleanUpDeadOrganisms();
+        // test.testPopulateRandomly();
     }
 }
