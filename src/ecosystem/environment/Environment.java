@@ -1,4 +1,5 @@
 package src.ecosystem.environment;
+
 import src.ecosystem.organism.*;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.Random;
 public class Environment {
     private int width; // Chiều rộng lưới
     private int height; // Chiều cao lưới
-    private double plantSpawnRate; //tỉ lệ sinh cỏ
+    private double plantSpawnRate; // tỉ lệ sinh cỏ
 
     private Organism[][] grid; // Lưới chứa sinh vật
     private List<Organism> organisms; // Danh sách tất cả sinh vật
@@ -18,7 +19,7 @@ public class Environment {
     private int herbivoreCount;
     private int carnivoreCount;
 
-    public Environment(int width, int height,double plantSpawnRate) {
+    public Environment(int width, int height, double plantSpawnRate) {
         this.width = width;
         this.height = height;
         this.plantSpawnRate = plantSpawnRate;
@@ -72,15 +73,14 @@ public class Environment {
                 if (organism != null && organism.isAlive() && !actedOrganisms.contains(organism)) {
                     organism.act(grid, organisms);
                     actedOrganisms.add(organism);
-                }
-                else if(organism == null){
+                } else if (organism == null) {
                     if (Math.random() < plantSpawnRate) {
-                        Plant newPlant = new Plant(x, y); 
-                        grid[x][y] = newPlant;         
-                        organisms.add(newPlant);             
+                        Plant newPlant = new Plant(x, y);
+                        grid[x][y] = newPlant;
+                        organisms.add(newPlant);
                     }
                 }
-    
+
                 // Check and remove dead organisms
                 if (organism != null && !organism.isAlive()) {
                     grid[x][y] = null; // Remove dead organism from the grid
@@ -105,7 +105,7 @@ public class Environment {
 
     public void displayGrid() {
         System.out.println("Step: " + timeStep);
-        System.out.println("Plant: "+ plantCount + "\nHerbivor: "+ herbivoreCount +"\nCarnivore: "+ carnivoreCount);
+        System.out.println("Plant: " + plantCount + "\nHerbivor: " + herbivoreCount + "\nCarnivore: " + carnivoreCount);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (grid[j][i] == null) {
@@ -146,7 +146,7 @@ public class Environment {
                 y = random.nextInt(height);
             } while (grid[x][y] != null);
 
-            addOrganism(new Carnivore(x,y), x, y);
+            addOrganism(new Carnivore(x, y), x, y);
         }
 
         for (int i = 0; i < numHerbivore; i++) {
@@ -155,10 +155,11 @@ public class Environment {
                 x = random.nextInt(width);
                 y = random.nextInt(height);
             } while (grid[x][y] != null);
-            
-            addOrganism(new Herbivore(x,y), x, y);
+
+            addOrganism(new Herbivore(x, y), x, y);
         }
     }
+
     public List<Plant> getAllProducers() {
         List<Plant> producers = new ArrayList<>();
         for (Organism organism : organisms) {
@@ -206,7 +207,8 @@ public class Environment {
             }
         }
 
-        System.out.printf("Numbers of organism - Plants: %d, Herbivores: %d, Carnivores: %d%n", plantCount, herbivoreCount, carnivoreCount);
+        System.out.printf("Numbers of organism - Plants: %d, Herbivores: %d, Carnivores: %d%n", plantCount,
+                herbivoreCount, carnivoreCount);
     }
 
     public int getWidth() {
@@ -251,7 +253,8 @@ public class Environment {
 
     @Override
     public String toString() {
-        return "Environment [width=" + width + ", height=" + height + ", plantSpawnRate=" + plantSpawnRate +", timeStep=" + timeStep + ", plantCount="
+        return "Environment [width=" + width + ", height=" + height + ", plantSpawnRate=" + plantSpawnRate
+                + ", timeStep=" + timeStep + ", plantCount="
                 + plantCount + ", herbivoreCount=" + herbivoreCount + ", carnivoreCount=" + carnivoreCount + "]";
     }
 

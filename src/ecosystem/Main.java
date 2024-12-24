@@ -9,7 +9,6 @@ public class Main {
         // Khởi chạy giao diện GUI trong luồng Event Dispatch Thread (EDT)
         SwingUtilities.invokeLater(() -> {
             try {
-                // Tạo và hiển thị cửa sổ chính
                 EnvironmentSimulationGUI gui = new EnvironmentSimulationGUI();
                 gui.setVisible(true);
             } catch (Exception e) {

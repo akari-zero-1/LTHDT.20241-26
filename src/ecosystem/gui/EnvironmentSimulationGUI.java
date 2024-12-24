@@ -1,6 +1,7 @@
 package src.ecosystem.gui;
 
 import src.ecosystem.environment.Environment;
+import src.ecosystem.organism.Animal;
 import src.ecosystem.organism.Carnivore;
 import src.ecosystem.organism.Herbivore;
 import src.ecosystem.organism.Plant;
@@ -49,26 +50,30 @@ public class EnvironmentSimulationGUI extends JFrame {
         balancedButton.addActionListener(e -> {
             setupBalancedConfiguration();
             configDialog.dispose();
-            showSetupDialog("30", "30", "0.01", "50", "30", "5", "2", "5", "200", "5", "200", "2", "5", "150", "4", "150");
+            showSetupDialog("30", "30", "0.01", "50", "30", "5", "2", "5", "200", "5", "200", "2", "5", "150", "4",
+                    "150");
         });
 
         overpopulationButton.addActionListener(e -> {
             setupOverpopulationConfiguration();
             configDialog.dispose();
-            showSetupDialog("30", "30", "0.01", "50", "30", "20", "2", "5", "200", "5", "200", "2", "5", "150", "4", "150");
+            showSetupDialog("30", "30", "0.01", "50", "30", "20", "2", "5", "200", "5", "200", "2", "5", "150", "4",
+                    "150");
         });
 
         extinctionButton.addActionListener(e -> {
             setupExtinctionConfiguration();
             configDialog.dispose();
-            showSetupDialog("30", "30", "0.0005", "20", "30", "5", "2", "5", "200", "5", "200", "2", "5", "150", "4", "150");
+            showSetupDialog("30", "30", "0.0005", "20", "30", "5", "2", "5", "200", "5", "200", "2", "5", "150", "4",
+                    "150");
         });
 
         buttonPanel.add(balancedButton);
         buttonPanel.add(overpopulationButton);
         buttonPanel.add(extinctionButton);
 
-        configDialog.add(new JLabel("Select a predefined ecosystem configuration:", SwingConstants.CENTER), BorderLayout.NORTH);
+        configDialog.add(new JLabel("Select a predefined ecosystem configuration:", SwingConstants.CENTER),
+                BorderLayout.NORTH);
         configDialog.add(buttonPanel, BorderLayout.CENTER);
 
         // Add Quit and Help Buttons
@@ -88,13 +93,19 @@ public class EnvironmentSimulationGUI extends JFrame {
         configDialog.setVisible(true);
     }
 
-    private void showSetupDialog(String gridWidth, String gridHeight, String plantSpawnRate, String plantCount, String herbivoreCount, String carnivoreCount, String carnivoreSpeed, String carnivoreRange, String carnivoreEnergyThreshold, String carnivoreEnergyDecay, String carnivoreDefaultEnergy, String herbivoreSpeed, String herbivoreRange, String herbivoreEnergyThreshold, String herbivoreEnergyDecay, String herbivoreDefaultEnergy) {
+    private void showSetupDialog(String gridWidth, String gridHeight, String plantSpawnRate, String plantCount,
+            String herbivoreCount, String carnivoreCount, String carnivoreSpeed, String carnivoreRange,
+            String carnivoreEnergyThreshold, String carnivoreEnergyDecay, String carnivoreDefaultEnergy,
+            String herbivoreSpeed, String herbivoreRange, String herbivoreEnergyThreshold, String herbivoreEnergyDecay,
+            String herbivoreDefaultEnergy) {
         JDialog setupDialog = new JDialog(this, "Simulation Setup", true);
         setupDialog.setSize(500, 600);
         setupDialog.setLayout(new BorderLayout());
 
         SimulationSetupPanel setupPanel = new SimulationSetupPanel();
-        setupPanel.updateFields(gridWidth, gridHeight, plantSpawnRate, plantCount, herbivoreCount, carnivoreCount, carnivoreSpeed, carnivoreRange, carnivoreEnergyThreshold, carnivoreEnergyDecay, carnivoreDefaultEnergy, herbivoreSpeed, herbivoreRange, herbivoreEnergyThreshold, herbivoreEnergyDecay, herbivoreDefaultEnergy);
+        setupPanel.updateFields(gridWidth, gridHeight, plantSpawnRate, plantCount, herbivoreCount, carnivoreCount,
+                carnivoreSpeed, carnivoreRange, carnivoreEnergyThreshold, carnivoreEnergyDecay, carnivoreDefaultEnergy,
+                herbivoreSpeed, herbivoreRange, herbivoreEnergyThreshold, herbivoreEnergyDecay, herbivoreDefaultEnergy);
         JButton startButton = new JButton("Start Simulation");
         startButton.addActionListener((ActionEvent e) -> {
             try {
@@ -102,7 +113,8 @@ public class EnvironmentSimulationGUI extends JFrame {
                 setupDialog.dispose();
                 startSimulation();
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(setupDialog, "Please enter valid numbers!", "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(setupDialog, "Please enter valid numbers!", "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -133,6 +145,11 @@ public class EnvironmentSimulationGUI extends JFrame {
         int plantCount = setupPanel.getPlantCount();
         int herbivoreCount = setupPanel.getHerbivoreCount();
         int carnivoreCount = setupPanel.getCarnivoreCount();
+        double energyGainRatio = setupPanel.getenergyGainRatio();
+        int plantEnergyGain = setupPanel.getPlantEneryGain();
+
+        Animal.setEnergyGainRatio(energyGainRatio);
+        Plant.setEnergyGain(plantEnergyGain);
 
         Carnivore.setMoveSpeed(setupPanel.getCarnivoreSpeed());
         Carnivore.setVisionRange(setupPanel.getCarnivoreRange());
@@ -153,17 +170,20 @@ public class EnvironmentSimulationGUI extends JFrame {
     }
 
     private void startSimulation() {
-        if (isRunning) return;
+        if (isRunning)
+            return;
         isRunning = true;
 
         simulationThread = new Thread(() -> {
             while (isRunning) {
-                if (environment == null) return;
+                if (environment == null)
+                    return;
 
                 environment.simulateStep();
                 simulationPanel.repaint();
 
-                if (checkSimulationEnd()) break;
+                if (checkSimulationEnd())
+                    break;
 
                 try {
                     Thread.sleep(750);
@@ -176,8 +196,10 @@ public class EnvironmentSimulationGUI extends JFrame {
     }
 
     private boolean checkSimulationEnd() {
-        if (environment.getPlantCount() == 0 && environment.getHerbivoreCount() == 0 && environment.getCarnivoreCount() == 0) {
-            JOptionPane.showMessageDialog(this, "Simulation ended: No organisms left.", "Simulation Ended", JOptionPane.INFORMATION_MESSAGE);
+        if (environment.getPlantCount() == 0 && environment.getHerbivoreCount() == 0
+                && environment.getCarnivoreCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Simulation ended: No organisms left.", "Simulation Ended",
+                    JOptionPane.INFORMATION_MESSAGE);
             isRunning = false;
             return true;
         }
@@ -193,7 +215,8 @@ public class EnvironmentSimulationGUI extends JFrame {
     }
 
     private void confirmQuit() {
-        int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit Confirmation", JOptionPane.YES_NO_OPTION);
+        int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit Confirmation",
+                JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
@@ -205,29 +228,36 @@ public class EnvironmentSimulationGUI extends JFrame {
 }
 
 class SimulationSetupPanel extends JPanel {
-    private JTextField gridWidthField, gridHeightField, plantSpawnRateField;
+    private JTextField gridWidthField, gridHeightField, plantSpawnRateField, energyGainRatioField;
     private JTextField plantCountField, herbivoreCountField, carnivoreCountField;
     private JTextField carnivoreSpeedField, carnivoreRangeField, carnivoreEnergyThresholdField;
-    private JTextField carnivoreEnergyDecayField, carnivoreDefaultEnergyField;
+    private JTextField carnivoreEnergyDecayField, carnivoreDefaultEnergyField, plantEnergyGainField;
     private JTextField herbivoreSpeedField, herbivoreRangeField, herbivoreEnergyThresholdField;
     private JTextField herbivoreEnergyDecayField, herbivoreDefaultEnergyField;
 
     public SimulationSetupPanel() {
-        setLayout(new GridLayout(16, 2, 5, 5));
+        setLayout(new GridLayout(21, 2, 5, 5));
 
         gridWidthField = addField("Grid Width:", "30");
         gridHeightField = addField("Grid Height:", "30");
-        plantSpawnRateField = addField("Plant Spawn Rate:", "0.01");
-        plantCountField = addField("Initial Plants:", "50");
-        herbivoreCountField = addField("Initial Herbivores:", "30");
-        carnivoreCountField = addField("Initial Carnivores:", "5");
+        energyGainRatioField = addField("Energy Gain Ratio:", "0.7");
+        add(new JLabel(""));
+        add(new JLabel(""));
 
+        plantCountField = addField("Initial Plants:", "50");
+        plantSpawnRateField = addField("Plant Spawn Rate:", "0.01");
+        plantEnergyGainField = addField("Plant Energy Gain:", "10");
+
+        carnivoreCountField = addField("Initial Carnivores:", "5");
         carnivoreSpeedField = addField("Carnivore Speed:", "2");
         carnivoreRangeField = addField("Carnivore Range:", "5");
         carnivoreEnergyThresholdField = addField("Carnivore Energy Threshold:", "200");
         carnivoreEnergyDecayField = addField("Carnivore Energy Decay:", "5");
         carnivoreDefaultEnergyField = addField("Carnivore Default Energy:", "200");
+        add(new JLabel(""));
+        add(new JLabel(""));
 
+        herbivoreCountField = addField("Initial Herbivores:", "30");
         herbivoreSpeedField = addField("Herbivore Speed:", "2");
         herbivoreRangeField = addField("Herbivore Range:", "5");
         herbivoreEnergyThresholdField = addField("Herbivore Energy Threshold:", "150");
@@ -242,25 +272,83 @@ class SimulationSetupPanel extends JPanel {
         return field;
     }
 
-    public int getGridWidth() { return Integer.parseInt(gridWidthField.getText()); }
-    public int getGridHeight() { return Integer.parseInt(gridHeightField.getText()); }
-    public double getPlantSpawnRate() { return Double.parseDouble(plantSpawnRateField.getText()); }
-    public int getPlantCount() { return Integer.parseInt(plantCountField.getText()); }
-    public int getHerbivoreCount() { return Integer.parseInt(herbivoreCountField.getText()); }
-    public int getCarnivoreCount() { return Integer.parseInt(carnivoreCountField.getText()); }
-    public int getCarnivoreSpeed() { return Integer.parseInt(carnivoreSpeedField.getText()); }
-    public int getCarnivoreRange() { return Integer.parseInt(carnivoreRangeField.getText()); }
-    public int getCarnivoreEnergyThreshold() { return Integer.parseInt(carnivoreEnergyThresholdField.getText()); }
-    public int getCarnivoreEnergyDecay() { return Integer.parseInt(carnivoreEnergyDecayField.getText()); }
-    public int getCarnivoreDefaultEnergy() { return Integer.parseInt(carnivoreDefaultEnergyField.getText()); }
-    public int getHerbivoreSpeed() { return Integer.parseInt(herbivoreSpeedField.getText()); }
-    public int getHerbivoreRange() { return Integer.parseInt(herbivoreRangeField.getText()); }
-    public int getHerbivoreEnergyThreshold() { return Integer.parseInt(herbivoreEnergyThresholdField.getText()); }
-    public int getHerbivoreEnergyDecay() { return Integer.parseInt(herbivoreEnergyDecayField.getText()); }
-    public int getHerbivoreDefaultEnergy() { return Integer.parseInt(herbivoreDefaultEnergyField.getText()); }
-    
+    public int getGridWidth() {
+        return Integer.parseInt(gridWidthField.getText());
+    }
 
-    public void updateFields(String gridWidth, String gridHeight, String plantSpawnRate, String plantCount, String herbivoreCount, String carnivoreCount, String carnivoreSpeed, String carnivoreRange, String carnivoreEnergyThreshold, String carnivoreEnergyDecay, String carnivoreDefaultEnergy, String herbivoreSpeed, String herbivoreRange, String herbivoreEnergyThreshold, String herbivoreEnergyDecay, String herbivoreDefaultEnergy) {
+    public int getGridHeight() {
+        return Integer.parseInt(gridHeightField.getText());
+    }
+
+    public double getPlantSpawnRate() {
+        return Double.parseDouble(plantSpawnRateField.getText());
+    }
+
+    public double getenergyGainRatio() {
+        return Double.parseDouble(energyGainRatioField.getText());
+    }
+
+    public int getPlantCount() {
+        return Integer.parseInt(plantCountField.getText());
+    }
+
+    public int getHerbivoreCount() {
+        return Integer.parseInt(herbivoreCountField.getText());
+    }
+
+    public int getPlantEneryGain() {
+        return Integer.parseInt(plantEnergyGainField.getText());
+    }
+
+    public int getCarnivoreCount() {
+        return Integer.parseInt(carnivoreCountField.getText());
+    }
+
+    public int getCarnivoreSpeed() {
+        return Integer.parseInt(carnivoreSpeedField.getText());
+    }
+
+    public int getCarnivoreRange() {
+        return Integer.parseInt(carnivoreRangeField.getText());
+    }
+
+    public int getCarnivoreEnergyThreshold() {
+        return Integer.parseInt(carnivoreEnergyThresholdField.getText());
+    }
+
+    public int getCarnivoreEnergyDecay() {
+        return Integer.parseInt(carnivoreEnergyDecayField.getText());
+    }
+
+    public int getCarnivoreDefaultEnergy() {
+        return Integer.parseInt(carnivoreDefaultEnergyField.getText());
+    }
+
+    public int getHerbivoreSpeed() {
+        return Integer.parseInt(herbivoreSpeedField.getText());
+    }
+
+    public int getHerbivoreRange() {
+        return Integer.parseInt(herbivoreRangeField.getText());
+    }
+
+    public int getHerbivoreEnergyThreshold() {
+        return Integer.parseInt(herbivoreEnergyThresholdField.getText());
+    }
+
+    public int getHerbivoreEnergyDecay() {
+        return Integer.parseInt(herbivoreEnergyDecayField.getText());
+    }
+
+    public int getHerbivoreDefaultEnergy() {
+        return Integer.parseInt(herbivoreDefaultEnergyField.getText());
+    }
+
+    public void updateFields(String gridWidth, String gridHeight, String plantSpawnRate, String plantCount,
+            String herbivoreCount, String carnivoreCount, String carnivoreSpeed, String carnivoreRange,
+            String carnivoreEnergyThreshold, String carnivoreEnergyDecay, String carnivoreDefaultEnergy,
+            String herbivoreSpeed, String herbivoreRange, String herbivoreEnergyThreshold, String herbivoreEnergyDecay,
+            String herbivoreDefaultEnergy) {
         gridWidthField.setText(gridWidth);
         gridHeightField.setText(gridHeight);
         plantSpawnRateField.setText(plantSpawnRate);
@@ -309,7 +397,8 @@ class SimulationPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (environment == null) return;
+        if (environment == null)
+            return;
 
         // Calculate the grid dimensions
         int panelHeight = getHeight();

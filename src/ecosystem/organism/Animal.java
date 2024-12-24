@@ -8,6 +8,7 @@ import java.lang.Math;
 
 public abstract class Animal extends Organism {
     public boolean isAlive = true;
+    public static double energyGainRatio = 0.7;
 
     public Animal(int energy, int xPos, int yPos) {
         super(energy, xPos, yPos);
@@ -99,7 +100,7 @@ public abstract class Animal extends Organism {
     public void eat(Organism target, Organism[][] map, List<Organism> organisms) {
         if (target != null) {
             // Gain energy from the target
-            int energy = (int)(this.getEnergy() + target.getEnergy()*0.7);
+            int energy = (int) (this.getEnergy() + target.getEnergy() * energyGainRatio);
             this.setEnergy(energy);
             target.setAlive(false);
             map[target.getxPos()][target.getyPos()] = null;
@@ -169,8 +170,8 @@ public abstract class Animal extends Organism {
                         int energy_new = this.energy / 2;
                         this.energy -= energy_new;
                         Organism offspring = createOffspring(energy_new, newX, newY);
-                        //System.out.println("Parent: " + this);
-                        //System.out.println("Offspring: " + offspring);
+                        // System.out.println("Parent: " + this);
+                        // System.out.println("Offspring: " + offspring);
                         map[newX][newY] = offspring;
                         this.energy -= energy_new;
                         return;
@@ -189,5 +190,11 @@ public abstract class Animal extends Organism {
             return null;
         }
     }
+    public static double getEnergyGainRatio() {
+        return energyGainRatio;
+    }
 
+    public static void setEnergyGainRatio(double energyGainRatio) {
+        Animal.energyGainRatio = energyGainRatio;
+    }
 }

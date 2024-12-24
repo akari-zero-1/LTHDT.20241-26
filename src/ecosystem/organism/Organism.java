@@ -14,6 +14,7 @@ public abstract class Organism {
         this.yPos = yPos;
         this.isAlive = true;
     }
+
     public Organism(int xPos, int yPos) {
         this.xPos = xPos;
         this.yPos = yPos;
@@ -58,6 +59,6 @@ public abstract class Organism {
 
     @Override
     public String toString() {
-        return "Organism [energy=" + energy + ", xPos=" + xPos + ", yPos=" + yPos + " isAlive=" + isAlive +"]";
+        return "Organism [energy=" + energy + ", xPos=" + xPos + ", yPos=" + yPos + " isAlive=" + isAlive + "]";
     }
 }
