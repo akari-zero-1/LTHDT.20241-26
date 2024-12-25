@@ -160,36 +160,6 @@ public class Environment {
         }
     }
 
-    public List<Plant> getAllProducers() {
-        List<Plant> producers = new ArrayList<>();
-        for (Organism organism : organisms) {
-            if (organism instanceof Plant) {
-                producers.add((Plant) organism);
-            }
-        }
-        return producers;
-    }
-
-    public List<Herbivore> getAllHerbivores() {
-        List<Herbivore> herbivores = new ArrayList<>();
-        for (Organism organism : organisms) {
-            if (organism instanceof Herbivore) {
-                herbivores.add((Herbivore) organism);
-            }
-        }
-        return herbivores;
-    }
-
-    public List<Carnivore> getAllCarnivores() {
-        List<Carnivore> carnivores = new ArrayList<>();
-        for (Organism organism : organisms) {
-            if (organism instanceof Carnivore) {
-                carnivores.add((Carnivore) organism);
-            }
-        }
-        return carnivores;
-    }
-
     public void countOrganisms() {
         int plantCount = 0;
         int herbivoreCount = 0;
