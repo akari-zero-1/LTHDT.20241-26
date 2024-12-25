@@ -1,5 +1,7 @@
 package src.ecosystem.organism;
 
+import java.util.List;
+
 public class Plant extends Organism {
     public static int energyGain = 10;
     public static int defaultEnergy = 300;
@@ -13,7 +15,7 @@ public class Plant extends Organism {
         this.energy = defaultEnergy;
     }
 
-    public void act() {
+    public void act(Organism[][] map, List<Organism> organisms) {
         grow();
     }
 

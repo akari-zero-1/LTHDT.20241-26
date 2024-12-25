@@ -48,24 +48,33 @@ public class EnvironmentSimulationGUI extends JFrame {
         JButton extinctionButton = new JButton("Extinction");
 
         balancedButton.addActionListener(e -> {
-            setupBalancedConfiguration();
             configDialog.dispose();
-            showSetupDialog("30", "30", "0.01", "50", "30", "5", "2", "5", "200", "5", "200", "2", "5", "150", "4",
+            showSetupDialog("30", "30", "0.01", "50", 
+            "30", "5", "2", 
+            "5", "200", "5", 
+            "200", "2", "5", 
+            "150", "4",
                     "150");
         });
 
         overpopulationButton.addActionListener(e -> {
-            setupOverpopulationConfiguration();
             configDialog.dispose();
-            showSetupDialog("30", "30", "0.01", "50", "30", "20", "2", "5", "200", "5", "200", "2", "5", "150", "4",
-                    "150");
+            showSetupDialog("30", "30", "0.01", "50", 
+            "30", "20", "3", 
+            "5", "200", "5", 
+            "200", "2", "5", 
+            "150", "4",
+            "150");
         });
 
         extinctionButton.addActionListener(e -> {
-            setupExtinctionConfiguration();
             configDialog.dispose();
-            showSetupDialog("30", "30", "0.0005", "20", "30", "5", "2", "5", "200", "5", "200", "2", "5", "150", "4",
-                    "150");
+            showSetupDialog("30", "30", "0.0005", "20", 
+            "30", "5", "3", 
+            "5", "200", "5", 
+            "200", "2", "5", 
+            "150", "4",
+            "150");
         });
 
         buttonPanel.add(balancedButton);
@@ -121,21 +130,6 @@ public class EnvironmentSimulationGUI extends JFrame {
         setupDialog.add(setupPanel, BorderLayout.CENTER);
         setupDialog.add(startButton, BorderLayout.SOUTH);
         setupDialog.setVisible(true);
-    }
-
-    private void setupBalancedConfiguration() {
-        // Set up parameters for a balanced ecosystem
-        System.out.println("Balanced ecosystem configuration selected.");
-    }
-
-    private void setupOverpopulationConfiguration() {
-        // Set up parameters for overpopulation
-        System.out.println("Overpopulation configuration selected.");
-    }
-
-    private void setupExtinctionConfiguration() {
-        // Set up parameters for extinction
-        System.out.println("Extinction configuration selected.");
     }
 
     private void setupEnvironment(SimulationSetupPanel setupPanel) {
@@ -196,9 +190,15 @@ public class EnvironmentSimulationGUI extends JFrame {
     }
 
     private boolean checkSimulationEnd() {
-        if (environment.getPlantCount() == 0 && environment.getHerbivoreCount() == 0
-                && environment.getCarnivoreCount() == 0) {
-            JOptionPane.showMessageDialog(this, "Simulation ended: No organisms left.", "Simulation Ended",
+        if (environment.getHerbivoreCount() <= 0) {
+            JOptionPane.showMessageDialog(this, "Simulation ended: No herbivore organisms left.", "Simulation Ended",
+                    JOptionPane.INFORMATION_MESSAGE);
+            isRunning = false;
+            return true;
+        }
+
+        if (environment.getCarnivoreCount() <= 0) {
+            JOptionPane.showMessageDialog(this, "Simulation ended: No carnivore organisms left.", "Simulation Ended",
                     JOptionPane.INFORMATION_MESSAGE);
             isRunning = false;
             return true;
@@ -247,6 +247,8 @@ class SimulationSetupPanel extends JPanel {
         plantCountField = addField("Initial Plants:", "50");
         plantSpawnRateField = addField("Plant Spawn Rate:", "0.01");
         plantEnergyGainField = addField("Plant Energy Gain:", "10");
+        add(new JLabel(""));
+        add(new JLabel(""));
 
         carnivoreCountField = addField("Initial Carnivores:", "5");
         carnivoreSpeedField = addField("Carnivore Speed:", "2");

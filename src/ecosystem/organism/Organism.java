@@ -53,9 +53,7 @@ public abstract class Organism {
         this.isAlive = isAlive;
     };
 
-    public void act(Organism[][] map, List<Organism> organisms) {
-
-    }
+    public abstract void act(Organism[][] map, List<Organism> organisms);
 
     @Override
     public String toString() {
